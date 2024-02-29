@@ -12,5 +12,34 @@
     "nameSlug": "thread-summarizer",
     "classFile": "ThreadSummarizerApp.ts",
     "description": "An AI assistant that summarizes conversations in Rocket.Chat",
-    "implements": []
+    "implements": [],
+    "permissions": [
+        {
+            "name": "user.read"
+        },
+        {
+            "name": "user.write"
+        },
+        {
+            "name": "room.read"
+        },
+        {
+            "name": "room.write"
+        },
+        {
+            "name": "message.read"
+        },
+        {
+            "name": "message.write"
+        },
+        {
+            "name": "slashcommand"
+        },
+        {
+            "name": "api"
+        },
+        {
+            "name": "threads.read"
+        }
+    ]
 }

@@ -26,9 +26,7 @@ export class SummarizeCommand implements ISlashCommand {
             throw new Error('You can only call /summarize-thread in a thread')
         }
 
-        await this.notifyMessage(room, read, user, threadId)
         const threadReader = read.getThreadReader()
-        // TODO: find out why always return undefined
         const thread = await threadReader.getThreadById(threadId)
 
         if (!thread) {
@@ -43,6 +41,8 @@ export class SummarizeCommand implements ISlashCommand {
             }
         }
 
+        // threadReader repeats the first message once, so here we remove it
+        // TODO: raise an issue in App Engine
         await this.notifyMessage(room, read, user, messageTexts.join(', '), threadId)
     }
 
