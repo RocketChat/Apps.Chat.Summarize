@@ -39,6 +39,9 @@
             "name": "api"
         },
         {
+            "name": "networking"
+        },
+        {
             "name": "threads.read"
         }
     ]

@@ -2,61 +2,153 @@ import {
     IHttp,
     IModify,
     IRead,
-} from '@rocket.chat/apps-engine/definition/accessors';
-import { IRoom } from '@rocket.chat/apps-engine/definition/rooms';
+} from "@rocket.chat/apps-engine/definition/accessors";
+import { IRoom } from "@rocket.chat/apps-engine/definition/rooms";
 import {
     ISlashCommand,
     SlashCommandContext,
-} from '@rocket.chat/apps-engine/definition/slashcommands';
-import { IUser } from '@rocket.chat/apps-engine/definition/users';
+} from "@rocket.chat/apps-engine/definition/slashcommands";
+import { IUser } from "@rocket.chat/apps-engine/definition/users";
+import { config } from "dotenv";
+import { resolve } from "path";
 
 export class SummarizeCommand implements ISlashCommand {
-    public command = 'summarize-thread';
-    public i18nParamsExample = 'Summarize messages in a thread';
-    public i18nDescription = '';
+    public command = "summarize-thread";
+    public i18nParamsExample = "Summarize messages in a thread";
+    public i18nDescription = "";
     public providesPreview = false;
 
-    public async executor(context: SlashCommandContext, read: IRead, modify: IModify, http: IHttp): Promise<void> {
-        const user = context.getSender()
-        const room = context.getRoom()
-        const threadId = context.getThreadId()
+    public async executor(
+        context: SlashCommandContext,
+        read: IRead,
+        modify: IModify,
+        http: IHttp
+    ): Promise<void> {
+        config({ path: resolve(__dirname, "../.env") });
+        const user = context.getSender();
+        const room = context.getRoom();
+        const threadId = context.getThreadId();
 
         if (!threadId) {
-            await this.notifyMessage(room, read, user, 'You can only call /summarize-thread in a thread')
-            throw new Error('You can only call /summarize-thread in a thread')
+            await this.notifyMessage(
+                room,
+                read,
+                user,
+                "You can only call /summarize-thread in a thread"
+            );
+            throw new Error("You can only call /summarize-thread in a thread");
         }
 
-        const threadReader = read.getThreadReader()
-        const thread = await threadReader.getThreadById(threadId)
+        const messages = await this.getThreadMessages(
+            room,
+            read,
+            user,
+            threadId
+        );
+        const summary = await this.summarizeMessages(
+            room,
+            read,
+            user,
+            http,
+            messages
+        );
+
+        await this.notifyMessage(room, read, user, summary, threadId);
+    }
+
+    private async summarizeMessages(
+        room: IRoom,
+        read: IRead,
+        user: IUser,
+        http: IHttp,
+        messages: string
+    ): Promise<string> {
+        const OPENAI_URL = "https://api.openai.com/v1/chat/completions";
+        const MODEL = "gpt-3.5-turbo";
+
+        const body = {
+            model: MODEL,
+            messages: [
+                {
+                    role: "system",
+                    content:
+                        "You are a helpful assistant. Briefly summarize the messages provided by the user. The messages are separated by [EOM].",
+                },
+                {
+                    role: "user",
+                    content: `Messages: ${messages}`,
+                },
+            ],
+            temperature: 0,
+        };
+
+        const response = await http.post(OPENAI_URL, {
+            headers: {
+                Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
+                "Content-Type": "application/json",
+            },
+            content: JSON.stringify(body),
+        });
+        // const modelResponse = JSON.parse(response.content)
+
+        if (!response.content) {
+            await this.notifyMessage(
+                room,
+                read,
+                user,
+                "Something is wrong with AI. Please try again later"
+            );
+            throw new Error(
+                "Something is wrong with AI. Please try again later"
+            );
+        }
+
+        return JSON.parse(response.content).choices[0].message.content;
+    }
+
+    private async getThreadMessages(
+        room: IRoom,
+        read: IRead,
+        user: IUser,
+        threadId: string
+    ) {
+        const threadReader = read.getThreadReader();
+        const thread = await threadReader.getThreadById(threadId);
 
         if (!thread) {
-            await this.notifyMessage(room, read, user, 'Thread not found')
-            throw new Error('Thread not found')
+            await this.notifyMessage(room, read, user, "Thread not found");
+            throw new Error("Thread not found");
         }
 
-        const messageTexts: string[] = []
+        const messageTexts: string[] = [];
         for (const message of thread) {
             if (message.text) {
-                messageTexts.push(message.text)
+                messageTexts.push(message.text);
             }
         }
 
         // threadReader repeats the first message once, so here we remove it
-        // TODO: raise an issue in App Engine
-        await this.notifyMessage(room, read, user, messageTexts.join(', '), threadId)
+        messageTexts.shift();
+        return messageTexts.join("[EOM]");
     }
 
-    private async notifyMessage(room: IRoom, read: IRead, sender: IUser, message: string, threadId?: string): Promise<void> {
-        const notifier = read.getNotifier()
+    private async notifyMessage(
+        room: IRoom,
+        read: IRead,
+        user: IUser,
+        message: string,
+        threadId?: string
+    ): Promise<void> {
+        const notifier = read.getNotifier();
 
-        const messageBuilder = notifier.getMessageBuilder()
-        messageBuilder.setText(message)
-        messageBuilder.setRoom(room)
+        const messageBuilder = notifier.getMessageBuilder();
+        messageBuilder.setText(message);
+        messageBuilder.setRoom(room);
 
         if (threadId) {
-            messageBuilder.setThreadId(threadId)
+            messageBuilder.setThreadId(threadId);
         }
 
-        return notifier.notifyUser(sender, messageBuilder.getMessage())
+        return notifier.notifyUser(user, messageBuilder.getMessage());
     }
 }
