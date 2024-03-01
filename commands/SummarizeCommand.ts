@@ -9,8 +9,6 @@ import {
     SlashCommandContext,
 } from "@rocket.chat/apps-engine/definition/slashcommands";
 import { IUser } from "@rocket.chat/apps-engine/definition/users";
-import { config } from "dotenv";
-import { resolve } from "path";
 
 export class SummarizeCommand implements ISlashCommand {
     public command = "summarize-thread";
@@ -24,7 +22,6 @@ export class SummarizeCommand implements ISlashCommand {
         modify: IModify,
         http: IHttp
     ): Promise<void> {
-        config({ path: resolve(__dirname, "../.env") });
         const user = context.getSender();
         const room = context.getRoom();
         const threadId = context.getThreadId();
@@ -45,6 +42,7 @@ export class SummarizeCommand implements ISlashCommand {
             user,
             threadId
         );
+
         const summary = await this.summarizeMessages(
             room,
             read,
@@ -65,18 +63,16 @@ export class SummarizeCommand implements ISlashCommand {
     ): Promise<string> {
         const OPENAI_URL = "https://api.openai.com/v1/chat/completions";
         const MODEL = "gpt-3.5-turbo";
+        const OPENAI_API_KEY =
+            "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";
 
         const body = {
             model: MODEL,
             messages: [
                 {
                     role: "system",
-                    content:
-                        "You are a helpful assistant. Briefly summarize the messages provided by the user. The messages are separated by [EOM].",
-                },
-                {
-                    role: "user",
-                    content: `Messages: ${messages}`,
+                    content: `You are an assistant that helps Rocket.Chat users quickly understand what people have been talking about in a thread.
+                        Briefly summarize the messages in the thread, which are separated by double slashes (//): ${messages}`,
                 },
             ],
             temperature: 0,
@@ -84,12 +80,11 @@ export class SummarizeCommand implements ISlashCommand {
 
         const response = await http.post(OPENAI_URL, {
             headers: {
-                Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
+                Authorization: `Bearer ${OPENAI_API_KEY}`,
                 "Content-Type": "application/json",
             },
             content: JSON.stringify(body),
         });
-        // const modelResponse = JSON.parse(response.content)
 
         if (!response.content) {
             await this.notifyMessage(
@@ -123,13 +118,13 @@ export class SummarizeCommand implements ISlashCommand {
         const messageTexts: string[] = [];
         for (const message of thread) {
             if (message.text) {
-                messageTexts.push(message.text);
+                messageTexts.push(`${message.sender.name}: ${message.text}`);
             }
         }
 
         // threadReader repeats the first message once, so here we remove it
         messageTexts.shift();
-        return messageTexts.join("[EOM]");
+        return messageTexts.join(" // ");
     }
 
     private async notifyMessage(
