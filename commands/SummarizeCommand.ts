@@ -63,8 +63,6 @@ export class SummarizeCommand implements ISlashCommand {
     ): Promise<string> {
         const OPENAI_URL = "https://api.openai.com/v1/chat/completions";
         const MODEL = "gpt-3.5-turbo";
-        const OPENAI_API_KEY =
-            "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";
 
         const body = {
             model: MODEL,
@@ -80,7 +78,7 @@ export class SummarizeCommand implements ISlashCommand {
 
         const response = await http.post(OPENAI_URL, {
             headers: {
-                Authorization: `Bearer ${OPENAI_API_KEY}`,
+                Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
                 "Content-Type": "application/json",
             },
             content: JSON.stringify(body),
