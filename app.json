@@ -1,48 +1,48 @@
 {
-	"id": "0034268f-e49a-4113-be51-4a5ca77aeeb8",
-	"version": "0.0.1",
-	"requiredApiVersion": "^1.19.0",
-	"iconFile": "icon.png",
-	"author": {
-		"name": "Jeffrey Yu",
-		"homepage": "itsjeffreyyu@gmail.com",
-		"support": "itsjeffreyyu@gmail.com"
-	},
-	"name": "Thread Summarizer",
-	"nameSlug": "thread-summarizer",
-	"classFile": "ThreadSummarizerApp.ts",
-	"description": "An AI assistant that summarizes conversations in Rocket.Chat",
-	"implements": [],
-	"permissions": [
-		{
-			"name": "user.read"
-		},
-		{
-			"name": "user.write"
-		},
-		{
-			"name": "room.read"
-		},
-		{
-			"name": "room.write"
-		},
-		{
-			"name": "message.read"
-		},
-		{
-			"name": "message.write"
-		},
-		{
-			"name": "slashcommand"
-		},
-		{
-			"name": "api"
-		},
-		{
-			"name": "networking"
-		},
-		{
-			"name": "threads.read"
-		}
-	]
+    "id": "0034268f-e49a-4113-be51-4a5ca77aeeb8",
+    "version": "0.0.1",
+    "requiredApiVersion": "^1.19.0",
+    "iconFile": "icon.png",
+    "author": {
+        "name": "Jeffrey Yu",
+        "homepage": "itsjeffreyyu@gmail.com",
+        "support": "itsjeffreyyu@gmail.com"
+    },
+    "name": "Thread Summarizer",
+    "nameSlug": "thread-summarizer",
+    "classFile": "ThreadSummarizerApp.ts",
+    "description": "An AI assistant that summarizes conversations in Rocket.Chat",
+    "implements": [],
+    "permissions": [
+        {
+            "name": "user.read"
+        },
+        {
+            "name": "user.write"
+        },
+        {
+            "name": "room.read"
+        },
+        {
+            "name": "room.write"
+        },
+        {
+            "name": "message.read"
+        },
+        {
+            "name": "message.write"
+        },
+        {
+            "name": "slashcommand"
+        },
+        {
+            "name": "api"
+        },
+        {
+            "name": "networking"
+        },
+        {
+            "name": "threads.read"
+        }
+    ]
 }

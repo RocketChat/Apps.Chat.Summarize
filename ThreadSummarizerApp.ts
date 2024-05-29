@@ -18,7 +18,9 @@ export class ThreadSummarizerApp extends App {
 			...settings.map((setting) =>
 				configuration.settings.provideSetting(setting)
 			),
-			configuration.slashCommands.provideSlashCommand(new SummarizeCommand()),
+			configuration.slashCommands.provideSlashCommand(
+				new SummarizeCommand(this)
+			),
 		]);
 	}
 }
