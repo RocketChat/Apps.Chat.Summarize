@@ -15,7 +15,7 @@ import { createSummaryPrompt } from '../constants/prompts';
 import { App } from '@rocket.chat/apps-engine/definition/App';
 
 export class SummarizeCommand implements ISlashCommand {
-	public command = 'summarize-thread';
+	public command = 'summary';
 	public i18nParamsExample = 'Summarize messages in a thread';
 	public i18nDescription = '';
 	public providesPreview = false;
