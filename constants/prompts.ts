@@ -28,7 +28,7 @@ Summary: Arthur is still unemployed. Leon sends him a job offer for junior proje
 
 ---
 
-Summarize the following dialogue using 1-3 short and simple sentences. Use as fewer words as possible. Mention the names of specific persons.
+Summarize the following dialogue. Mention the names of specific persons. Only give the summary, nothing else.
 
 Dialogue: ###
 {dialogue}
