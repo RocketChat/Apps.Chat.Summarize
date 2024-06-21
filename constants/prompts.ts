@@ -44,7 +44,8 @@ const ASSIGNED_TASKS_PROMPT = `
 Analyze the following dialogue to identify any assigned tasks. An assigned task is typically indicated by phrases where one person delegates an action to another person or team, often specifying what needs to be done and by whom. Highlight these assigned tasks, including any relevant details such as deadlines or specific instructions.
 
 Your task is to extract and present the assigned tasks clearly. For each assigned task, provide the following details:
-- Task Description
+Task Title
+- Description
 - Assignee
 - Deadline (if mentioned)
 
@@ -57,4 +58,29 @@ Dialogue to analyze:
 
 export function createAssignedTasksPrompt(dialogue: string): string {
 	return ASSIGNED_TASKS_PROMPT.replace('{dialogue}', dialogue);
+}
+
+const FOLLOW_UP_QUESTIONS_PROMPT = `
+Analyze the following dialogue and suggest 1-3 follow-up questions that would help clarify or expand on the topics discussed. Use bullet points.
+
+The output format should be as follows:
+Suggested follow-up questions:
+- Question 1
+- Question 2
+- Question 3
+
+Strictly follow the output format and output nothing else.
+
+Tips on follow-up questions:
+- Obtain additional information or details.
+- Clarify any ambiguous statements or instructions.
+- Explore related ideas or implications.
+- Address any unanswered questions or unresolved issues.
+
+Dialogue to analyze:
+{dialogue}
+`;
+
+export function createFollowUpQuestionsPrompt(dialogue: string): string {
+	return FOLLOW_UP_QUESTIONS_PROMPT.replace('{dialogue}', dialogue);
 }

@@ -24,8 +24,7 @@ export const settings: ISetting[] = [
 		type: SettingType.MULTI_SELECT,
 		values: [
 			{ key: 'assigned-tasks', i18nLabel: 'Assigned tasks' },
-			{ key: 'follow-up-question', i18nLabel: 'Follow-up question' },
-			{ key: 'important-dates', i18nLabel: 'Important dates' },
+			{ key: 'follow-up-questions', i18nLabel: 'Follow-up questions' },
 		],
 		required: false,
 		public: true,

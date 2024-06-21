@@ -13,6 +13,7 @@ import { notifyMessage } from '../helpers/notifyMessage';
 import { createTextCompletion } from '../helpers/createTextCompletion';
 import {
 	createAssignedTasksPrompt,
+	createFollowUpQuestionsPrompt,
 	createSummaryPrompt,
 } from '../constants/prompts';
 import { App } from '@rocket.chat/apps-engine/definition/App';
@@ -48,9 +49,9 @@ export class SummarizeCommand implements ISlashCommand {
 			throw new Error('You can only call /summarize-thread in a thread');
 		}
 
+		await notifyMessage(room, read, user, 'Creating your summary...', threadId);
+
 		const messages = await this.getThreadMessages(room, read, user, threadId);
-		// For testing purposes
-		await notifyMessage(room, read, user, messages, threadId);
 
 		const prompt = createSummaryPrompt(messages);
 		const summary = await createTextCompletion(
@@ -82,6 +83,20 @@ export class SummarizeCommand implements ISlashCommand {
 				threadId
 			);
 			await notifyMessage(room, read, user, assignedTasks, threadId);
+		}
+
+		if (addOns.includes('follow-up-questions')) {
+			const followUpQuestionsPrompt = createFollowUpQuestionsPrompt(messages);
+			const followUpQuestions = await createTextCompletion(
+				this.app,
+				room,
+				read,
+				user,
+				http,
+				followUpQuestionsPrompt,
+				threadId
+			);
+			await notifyMessage(room, read, user, followUpQuestions, threadId);
 		}
 	}
 
