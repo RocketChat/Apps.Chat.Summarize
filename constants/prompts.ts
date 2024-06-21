@@ -39,3 +39,22 @@ Summary: `;
 export function createSummaryPrompt(dialogue: string): string {
 	return SUMMARY_PROMPT.replace('{dialogue}', dialogue);
 }
+
+const ASSIGNED_TASKS_PROMPT = `List assigned tasks mentioned in the following dialogue.
+
+Dialogue: ###
+{dialogue}
+###
+
+Output in the following format:
+Assigned tasks:
+- Person: Task
+- Person: Task
+
+Strictly follow the output format and say nothing else.
+Only output assigned tasks if mentioned obviously in the dialogue. Be strict. If no obvious assign tasks are mentioned, say "No assigned tasks".
+`;
+
+export function createAssignedTasksPrompt(dialogue: string): string {
+	return ASSIGNED_TASKS_PROMPT.replace('{dialogue}', dialogue);
+}

@@ -17,4 +17,18 @@ export const settings: ISetting[] = [
 		public: true,
 		packageValue: 'llama3-70b',
 	},
+	{
+		id: 'add-ons',
+		i18nLabel: 'Summary add-ons',
+		i18nDescription: 'Additional features to enable for the summary command',
+		type: SettingType.MULTI_SELECT,
+		values: [
+			{ key: 'assigned-tasks', i18nLabel: 'Assigned tasks' },
+			{ key: 'follow-up-question', i18nLabel: 'Follow-up question' },
+			{ key: 'important-dates', i18nLabel: 'Important dates' },
+		],
+		required: false,
+		public: true,
+		packageValue: '',
+	},
 ];

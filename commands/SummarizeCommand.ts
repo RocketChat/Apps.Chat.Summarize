@@ -11,7 +11,10 @@ import {
 import { IUser } from '@rocket.chat/apps-engine/definition/users';
 import { notifyMessage } from '../helpers/notifyMessage';
 import { createTextCompletion } from '../helpers/createTextCompletion';
-import { createSummaryPrompt } from '../constants/prompts';
+import {
+	createAssignedTasksPrompt,
+	createSummaryPrompt,
+} from '../constants/prompts';
 import { App } from '@rocket.chat/apps-engine/definition/App';
 
 export class SummarizeCommand implements ISlashCommand {
@@ -59,8 +62,27 @@ export class SummarizeCommand implements ISlashCommand {
 			prompt,
 			threadId
 		);
-
 		await notifyMessage(room, read, user, summary, threadId);
+
+		// summary add-ons
+		const addOns = await this.app
+			.getAccessors()
+			.environmentReader.getSettings()
+			.getValueById('add-ons');
+
+		if (addOns.includes('assigned-tasks')) {
+			const assignedTasksPrompt = createAssignedTasksPrompt(messages);
+			const assignedTasks = await createTextCompletion(
+				this.app,
+				room,
+				read,
+				user,
+				http,
+				assignedTasksPrompt,
+				threadId
+			);
+			await notifyMessage(room, read, user, assignedTasks, threadId);
+		}
 	}
 
 	private async getThreadMessages(
