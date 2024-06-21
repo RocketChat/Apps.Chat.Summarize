@@ -8,8 +8,8 @@
         "homepage": "itsjeffreyyu@gmail.com",
         "support": "itsjeffreyyu@gmail.com"
     },
-    "name": "Thread Summarizer",
-    "nameSlug": "thread-summarizer",
+    "name": "AI Chat Summarizer",
+    "nameSlug": "ai-chat-summarizer",
     "classFile": "ThreadSummarizerApp.ts",
     "description": "An AI assistant that summarizes conversations in Rocket.Chat",
     "implements": [],
