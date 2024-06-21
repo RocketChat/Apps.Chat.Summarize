@@ -40,19 +40,19 @@ export function createSummaryPrompt(dialogue: string): string {
 	return SUMMARY_PROMPT.replace('{dialogue}', dialogue);
 }
 
-const ASSIGNED_TASKS_PROMPT = `List assigned tasks mentioned in the following dialogue.
+const ASSIGNED_TASKS_PROMPT = `
+Analyze the following dialogue to identify any assigned tasks. An assigned task is typically indicated by phrases where one person delegates an action to another person or team, often specifying what needs to be done and by whom. Highlight these assigned tasks, including any relevant details such as deadlines or specific instructions.
 
-Dialogue: ###
+Your task is to extract and present the assigned tasks clearly. For each assigned task, provide the following details:
+- Task Description
+- Assignee
+- Deadline (if mentioned)
+
+Strictly follow the output format and output nothing else.
+Only output assigned tasks if mentioned obviously in the dialogue. Be strict. If no obvious assign tasks are mentioned, simply output "No assigned task mentioned" and nothing else.
+
+Dialogue to analyze:
 {dialogue}
-###
-
-Output in the following format:
-Assigned tasks:
-- Person: Task
-- Person: Task
-
-Strictly follow the output format and say nothing else.
-Only output assigned tasks if mentioned obviously in the dialogue. Be strict. If no obvious assign tasks are mentioned, say "No assigned tasks".
 `;
 
 export function createAssignedTasksPrompt(dialogue: string): string {
