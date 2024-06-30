@@ -1,0 +1,13 @@
+{
+    "links": [
+        {
+            "href": "https://github.com/Spiral-Memory/News-Aggregation",
+            "text": "View Source",
+            "imgAlt": "github_logo"
+        },
+        {
+            "href": "https://github.com/Spiral-Memory",
+            "text": "About me"
+        }
+    ]
+}

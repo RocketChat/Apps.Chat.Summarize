@@ -1,0 +1,38 @@
+.navbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 0.75rem;
+  top: 0;
+  width: 100%;
+  height: 10vh;
+}
+
+.projectContainer {
+  display: flex;
+}
+
+.logo {
+  width: 20%;
+}
+
+.navLinkContainer {
+  display: flex;
+  gap: 1.25rem;
+}
+
+.navLink {
+  text-decoration: none;
+  padding: 0.25rem;
+  border-bottom: 1.5px solid black;
+  color: black;
+}
+.navLink:hover {
+  border-color: #4ebe8c;
+}
+
+.navLink img {
+  margin-left: 5px;
+  vertical-align: middle;
+  width: 16px;
+}

@@ -1,0 +1,126 @@
+.body {
+  height: 90vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.projectContainer {
+  display: flex;
+  justify-content: space-between;
+}
+
+.projectInfo {
+  display: flex;
+  flex-direction: column;
+  padding: 0.25rem 1.75rem;
+  gap: 0.25rem;
+  width: 45vw;
+}
+
+.btnContainer {
+  display: flex;
+  gap: 1.25rem;
+  padding: 2rem 0;
+}
+.proposalBtn {
+  outline: none;
+  cursor: pointer;
+  font-weight: 600;
+  border-radius: 3px;
+  padding: 0.75rem 1.25rem;
+  border: 0;
+  color: #fff;
+  background: #4ebe8c;
+  line-height: 1.15;
+  font-size: 16px;
+  text-decoration: none;
+}
+
+.tryBtn {
+  outline: none;
+  cursor: pointer;
+  border: 0;
+  background: none;
+  line-height: 1.15;
+  font-size: 16px;
+}
+
+.tryBtn:hover {
+  border-bottom: 2px solid #4ebe8c;
+}
+
+.projectName {
+  padding: 2rem 0;
+  font-weight: 100;
+}
+
+.projectImageContainer {
+  position: relative;
+  display: flex;
+  align-items: center;
+  align-self: center;
+  justify-content: center;
+  flex: 1;
+  margin: 20px;
+  overflow: hidden;
+}
+
+.projectImage {
+  border-radius: 0.2rem;
+  max-width: 60%;
+  height: auto;
+  display: block;
+}
+
+.blankSquare,
+.blankSquare2 {
+  position: absolute;
+  border-radius: 0.2rem;
+  top: 0;
+  z-index: -1;
+  width: 60%;
+  height: 100%;
+  display: block;
+}
+
+.blankSquare {
+  background-color: #d4c4b5;
+  transform: rotate(10deg);
+}
+
+.blankSquare2 {
+  background-color: #b39b85;
+  transform: rotate(20deg);
+}
+
+.projectInfo ol {
+  padding-left: 50px;
+}
+
+.projectInfo li {
+  color: #4f4f4f;
+  padding-left: 16px;
+  margin-top: 24px;
+  position: relative;
+}
+
+.projectInfo li:before {
+  content: "";
+  display: block;
+  height: 20px;
+  width: 20px;
+  border-radius: 50%;
+  border: 2px solid #ddd;
+  position: absolute;
+  top: -3px;
+  left: -23px;
+}
+
+.projectInfo ol.alternatingColors li:nth-child(odd):before {
+  border-color: #1941e2;
+}
+
+.projectInfo ol.alternatingColors li:nth-child(even):before {
+  border-color: #23d532;
+}

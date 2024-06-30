@@ -1,0 +1,11 @@
+{
+    "proposalLink": "https://github.com/Spiral-Memory/GSoC-Proposal/blob/main/News%20aggregation%20GSoC%20Proposal.pdf",
+    "projectName": "NEWS AGGREGATION APP",
+    "projectAbstract": "The app allows you to aggregate news from various sources and share them within your Rocket Chat instance. Its benefits would be:",
+    "benefits": [
+        "Convenience: Users can easily access their favorite news content while enjoying leisure moments with their teams.",
+        "Increased Engagement: With news readily available, users will spend more time on the platform, leading to increased engagement and interaction within the community.",
+        "Perspective Exchange: By offering this feature, admins can promote discussions among team members on various topics, encouraging critical thinking abilities, and welcoming different perspectives.",
+        "Competitive Advantage: Providing news aggregation within the Rocket.Chat platform through this app will set Rocket.Chat apart from other communication platforms. This can attract new users and organizations seeking a platform that promotes the exchange of ideas among teams."
+    ]
+}
