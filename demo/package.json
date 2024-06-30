@@ -1,6 +1,6 @@
 {
   "name": "rc-app-demo-page",
-  "homepage": "https://Spiral-Memory.github.io/rc-app-demo-page",
+  "homepage": "https://rocket-chat.github.io/chat-summarizer-demo",
   "version": "0.1.0",
   "private": true,
   "dependencies": {

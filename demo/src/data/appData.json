@@ -1,5 +1,5 @@
 {
-    "proposalLink": "https://github.com/Spiral-Memory/GSoC-Proposal/blob/main/News%20aggregation%20GSoC%20Proposal.pdf",
+    "proposalLink": "https://github.com/RocketChat/Apps.Chat.Summarize/blob/main/demo/src/assets/proposal.pdf",
     "projectName": "AI Chat Summarizer",
     "projectAbstract": "Turns long chat messages into concise summaries using GenAI",
     "benefits": [
