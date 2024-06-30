@@ -1,16 +1,16 @@
 {
   "files": {
-    "main.css": "/chat-summarizer-demo/static/css/main.51a01e53.css",
-    "main.js": "/chat-summarizer-demo/static/js/main.b3964bdd.js",
-    "static/media/image.png": "/chat-summarizer-demo/static/media/image.57b0cd4a0c95b77829ac.png",
-    "static/media/header_logo.svg": "/chat-summarizer-demo/static/media/header_logo.fb3e36688a9b889ed5febee979f24adb.svg",
-    "static/media/github-mark.svg": "/chat-summarizer-demo/static/media/github-mark.6fa18895f6e6c7772cab7049f7e05f59.svg",
-    "index.html": "/chat-summarizer-demo/index.html",
-    "main.51a01e53.css.map": "/chat-summarizer-demo/static/css/main.51a01e53.css.map",
-    "main.b3964bdd.js.map": "/chat-summarizer-demo/static/js/main.b3964bdd.js.map"
+    "main.css": "/Apps.Chat.Summarize.github.io/chat-summarizer-demo/static/css/main.51a01e53.css",
+    "main.js": "/Apps.Chat.Summarize.github.io/chat-summarizer-demo/static/js/main.f71cc379.js",
+    "static/media/image.png": "/Apps.Chat.Summarize.github.io/chat-summarizer-demo/static/media/image.57b0cd4a0c95b77829ac.png",
+    "static/media/header_logo.svg": "/Apps.Chat.Summarize.github.io/chat-summarizer-demo/static/media/header_logo.fb3e36688a9b889ed5febee979f24adb.svg",
+    "static/media/github-mark.svg": "/Apps.Chat.Summarize.github.io/chat-summarizer-demo/static/media/github-mark.6fa18895f6e6c7772cab7049f7e05f59.svg",
+    "index.html": "/Apps.Chat.Summarize.github.io/chat-summarizer-demo/index.html",
+    "main.51a01e53.css.map": "/Apps.Chat.Summarize.github.io/chat-summarizer-demo/static/css/main.51a01e53.css.map",
+    "main.f71cc379.js.map": "/Apps.Chat.Summarize.github.io/chat-summarizer-demo/static/js/main.f71cc379.js.map"
   },
   "entrypoints": [
     "static/css/main.51a01e53.css",
-    "static/js/main.b3964bdd.js"
+    "static/js/main.f71cc379.js"
   ]
 }
