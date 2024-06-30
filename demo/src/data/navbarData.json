@@ -1,13 +1,9 @@
 {
     "links": [
         {
-            "href": "https://github.com/Spiral-Memory/News-Aggregation",
+            "href": "https://github.com/RocketChat/Apps.Chat.Summarize",
             "text": "View Source",
             "imgAlt": "github_logo"
-        },
-        {
-            "href": "https://github.com/Spiral-Memory",
-            "text": "About me"
         }
     ]
 }
