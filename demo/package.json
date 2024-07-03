@@ -1,6 +1,6 @@
 {
   "name": "rc-app-demo-page",
-  "homepage": "https://rocket-chat.github.io/chat-summarizer-demo",
+  "homepage": "https://rocketchat.github.io/Apps.Chat.Summarize",
   "version": "0.1.0",
   "private": true,
   "dependencies": {

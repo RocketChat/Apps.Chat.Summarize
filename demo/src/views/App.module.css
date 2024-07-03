@@ -56,22 +56,24 @@
 }
 
 .projectImageContainer {
-  position: relative;
-  display: flex;
-  align-items: center;
-  align-self: center;
-  justify-content: center;
-  flex: 1;
-  margin: 20px;
-  overflow: hidden;
-}
+    position: relative;
+    display: flex;
+    align-self: center;
+    justify-content: center;
+    flex: 1;
+    margin: 20px;
+    width: 100%;
+    height: 300px;
+    overflow: hidden;
+    }
 
-.projectImage {
-  border-radius: 0.2rem;
-  max-width: 60%;
-  height: auto;
-  display: block;
-}
+    .projectImage {
+    border-radius: 0.2rem;
+    width: 60%;
+    object-fit: cover;
+    height: auto;
+    display: block;
+    }
 
 .blankSquare,
 .blankSquare2 {
