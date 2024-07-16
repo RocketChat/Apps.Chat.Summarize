@@ -10,12 +10,12 @@ export const settings: ISetting[] = [
 		i18nDescription: 'AI model to use for summarization.',
 		type: SettingType.SELECT,
 		values: [
-			{ key: 'llama3-70b', i18nLabel: 'Llama3 70B' },
+			{ key: 'llama3-8b', i18nLabel: 'Llama3 8B' },
 			{ key: 'mistral-7b', i18nLabel: 'Mistral 7B' },
 		],
 		required: true,
 		public: true,
-		packageValue: 'llama3-70b',
+		packageValue: 'llama3-8b',
 	},
 	{
 		id: 'add-ons',
@@ -25,6 +25,7 @@ export const settings: ISetting[] = [
 		values: [
 			{ key: 'assigned-tasks', i18nLabel: 'Assigned tasks' },
 			{ key: 'follow-up-questions', i18nLabel: 'Follow-up questions' },
+			{ key: 'participants-summary', i18nLabel: 'Participants summary' },
 		],
 		required: false,
 		public: true,

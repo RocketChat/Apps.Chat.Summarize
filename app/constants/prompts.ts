@@ -61,7 +61,7 @@ export function createAssignedTasksPrompt(dialogue: string): string {
 }
 
 const FOLLOW_UP_QUESTIONS_PROMPT = `
-Analyze the following dialogue and suggest 1-3 follow-up questions that would help clarify or expand on the topics discussed. Use bullet points.
+Analyze the following dialogue and suggest 1-3 follow-up questions that would help clarify or expand on the topics discussed. Use bullet points. The questions should be concise and in a natural language.
 
 The output format should be as follows:
 Suggested follow-up questions:
@@ -83,4 +83,21 @@ Dialogue to analyze:
 
 export function createFollowUpQuestionsPrompt(dialogue: string): string {
 	return FOLLOW_UP_QUESTIONS_PROMPT.replace('{dialogue}', dialogue);
+}
+
+const PARTICIPANTS_SUMMARY_PROMPT = `
+Given the conversation thread below, provide a detailed summary of each participant's contributions. Highlight the key points, suggestions, questions, and any significant input each participant provided during the discussion. Ensure the summary is organized by participant and is concise yet comprehensive.
+
+Output format:
+Participant Summary:
+- Participant 1: Summary of contributions
+- Participant 2: Summary of contributions
+- Participant 3: Summary of contributions
+
+Dialogue to analyze:
+{dialogue}
+`;
+
+export function createParticipantsSummaryPrompt(dialogue: string): string {
+	return PARTICIPANTS_SUMMARY_PROMPT.replace('{dialogue}', dialogue);
 }

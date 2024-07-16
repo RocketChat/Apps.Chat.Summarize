@@ -14,12 +14,13 @@ import { createTextCompletion } from '../helpers/createTextCompletion';
 import {
 	createAssignedTasksPrompt,
 	createFollowUpQuestionsPrompt,
+	createParticipantsSummaryPrompt,
 	createSummaryPrompt,
 } from '../constants/prompts';
 import { App } from '@rocket.chat/apps-engine/definition/App';
 
 export class SummarizeCommand implements ISlashCommand {
-	public command = 'summary';
+	public command = 'summarize-thread';
 	public i18nParamsExample = 'Summarize messages in a thread';
 	public i18nDescription = '';
 	public providesPreview = false;
@@ -97,6 +98,21 @@ export class SummarizeCommand implements ISlashCommand {
 				threadId
 			);
 			await notifyMessage(room, read, user, followUpQuestions, threadId);
+		}
+
+		if (addOns.includes('participants-summary')) {
+			const participantsSummaryPrompt =
+				createParticipantsSummaryPrompt(messages);
+			const participantsSummary = await createTextCompletion(
+				this.app,
+				room,
+				read,
+				user,
+				http,
+				participantsSummaryPrompt,
+				threadId
+			);
+			await notifyMessage(room, read, user, participantsSummary, threadId);
 		}
 	}
 
