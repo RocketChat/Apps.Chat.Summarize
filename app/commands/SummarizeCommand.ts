@@ -15,6 +15,7 @@ import {
 	createAssignedTasksPrompt,
 	createFollowUpQuestionsPrompt,
 	createParticipantsSummaryPrompt,
+	createPromptInjectionProtectionPrompt,
 	createSummaryPrompt,
 } from '../constants/prompts';
 import { App } from '@rocket.chat/apps-engine/definition/App';
@@ -50,9 +51,31 @@ export class SummarizeCommand implements ISlashCommand {
 			throw new Error('You can only call /summarize-thread in a thread');
 		}
 
-		await notifyMessage(room, read, user, 'Creating your summary...', threadId);
-
 		const messages = await this.getThreadMessages(room, read, user, threadId);
+
+		const promptInjectionProtectionPrompt =
+			createPromptInjectionProtectionPrompt(messages);
+		const isPromptInjection = await createTextCompletion(
+			this.app,
+			room,
+			read,
+			user,
+			http,
+			promptInjectionProtectionPrompt,
+			threadId
+		);
+		if (isPromptInjection) {
+			await notifyMessage(
+				room,
+				read,
+				user,
+				'Prompt injection detected! You are not allowed to summarize messages that have potential attack to the AI model',
+				threadId
+			);
+			throw new Error('Prompt injection detected');
+		}
+
+		await notifyMessage(room, read, user, 'Creating your summary...', threadId);
 
 		const prompt = createSummaryPrompt(messages);
 		const summary = await createTextCompletion(
