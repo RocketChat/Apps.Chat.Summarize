@@ -17,6 +17,7 @@ import {
 	createParticipantsSummaryPrompt,
 	createPromptInjectionProtectionPrompt,
 	createSummaryPrompt,
+	createSummaryPromptByTopics,
 } from '../constants/prompts';
 import { App } from '@rocket.chat/apps-engine/definition/App';
 import { IMessageRaw } from '@rocket.chat/apps-engine/definition/messages';
@@ -49,7 +50,7 @@ export class SummarizeCommand implements ISlashCommand {
 			messages = await this.getThreadMessages(room, read, user, threadId);
 		}
 
-		// await notifyMessage(room, read, user, messages, threadId);
+		await notifyMessage(room, read, user, messages, threadId);
 
 		// const promptInjectionProtectionPrompt =
 		// 	createPromptInjectionProtectionPrompt(messages);
@@ -73,16 +74,30 @@ export class SummarizeCommand implements ISlashCommand {
 		// 	throw new Error('Prompt injection detected');
 		// }
 
-		const prompt = createSummaryPrompt(messages);
-		const summary = await createTextCompletion(
-			this.app,
-			room,
-			read,
-			user,
-			http,
-			prompt,
-			threadId
-		);
+		let summary: string;
+		if (!threadId) {
+			const prompt = createSummaryPromptByTopics(messages);
+			summary = await createTextCompletion(
+				this.app,
+				room,
+				read,
+				user,
+				http,
+				prompt,
+				threadId
+			);
+		} else {
+			const prompt = createSummaryPrompt(messages);
+			summary = await createTextCompletion(
+				this.app,
+				room,
+				read,
+				user,
+				http,
+				prompt,
+				threadId
+			);
+		}
 		await notifyMessage(room, read, user, summary, threadId);
 
 		// summary add-ons

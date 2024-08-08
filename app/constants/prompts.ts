@@ -125,3 +125,43 @@ export function createPromptInjectionProtectionPrompt(
 ): string {
 	return PROMPT_INJECTION_PROTECTION_PROMPT.replace('{input_text}', inputText);
 }
+
+const SUMMARY_PROMPT_BY_TOPICS = `
+Dialogue: ###
+{dialogue}
+###
+
+Summarize the above dialogue by topics.
+
+Only messages that are relevant to each other should be grouped together in a topic. It's ok to only have 1 or 2 topic(s) if the dialogue is not very diverse.
+
+Each topic should be summarized in 1-3 things discussed. Mention the names of specific persons.
+
+The output format for each topic should strictly follow the following structure:
+*{topic 1}*
+- {1 thing discussed}
+- {1 thing discussed}
+- {1 thing discussed}
+
+*{topic 2}*
+- {1 thing discussed}
+- {1 thing discussed}
+- {1 thing discussed}
+
+For example:
+*Meeting to discuss LLMs*
+- Aaron Wu shared details about accessing & trying out LLMs on the RC server
+- Steps were provided for creating an account, creating a RC App, and uploading it to the server
+- Peter Xu mentioned that CI workflow seems like a better idea than pre-commit hooks
+
+*Fixing linting errors*
+- Aaron Wu fixed most of the linting errors but encountered issues with UiKitModal file
+- The file was found to be missing, so Aaron Wu disabled the linting errors and pushed the commit
+- Jeffrey Yu can review the changes in PR #472
+
+Only give the output using the format above and nothing else.
+`;
+
+export function createSummaryPromptByTopics(dialogue: string): string {
+	return SUMMARY_PROMPT_BY_TOPICS.replace('{dialogue}', dialogue);
+}
