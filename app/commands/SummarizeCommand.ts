@@ -19,10 +19,11 @@ import {
 	createSummaryPrompt,
 } from '../constants/prompts';
 import { App } from '@rocket.chat/apps-engine/definition/App';
+import { IMessageRaw } from '@rocket.chat/apps-engine/definition/messages';
 
 export class SummarizeCommand implements ISlashCommand {
-	public command = 'summarize-thread';
-	public i18nParamsExample = 'Summarize messages in a thread';
+	public command = 'chat-summary';
+	public i18nParamsExample = 'Summarize messages in a thread or channel';
 	public i18nDescription = '';
 	public providesPreview = false;
 	private readonly app: App;
@@ -41,41 +42,36 @@ export class SummarizeCommand implements ISlashCommand {
 		const room = context.getRoom();
 		const threadId = context.getThreadId();
 
+		let messages: string;
 		if (!threadId) {
-			await notifyMessage(
-				room,
-				read,
-				user,
-				'You can only call /summarize-thread in a thread'
-			);
-			throw new Error('You can only call /summarize-thread in a thread');
+			messages = await this.getRoomMessages(room, read);
+		} else {
+			messages = await this.getThreadMessages(room, read, user, threadId);
 		}
 
-		const messages = await this.getThreadMessages(room, read, user, threadId);
+		// await notifyMessage(room, read, user, messages, threadId);
 
-		const promptInjectionProtectionPrompt =
-			createPromptInjectionProtectionPrompt(messages);
-		const isPromptInjection = await createTextCompletion(
-			this.app,
-			room,
-			read,
-			user,
-			http,
-			promptInjectionProtectionPrompt,
-			threadId
-		);
-		if (isPromptInjection) {
-			await notifyMessage(
-				room,
-				read,
-				user,
-				'Prompt injection detected! You are not allowed to summarize messages that have potential attack to the AI model',
-				threadId
-			);
-			throw new Error('Prompt injection detected');
-		}
-
-		await notifyMessage(room, read, user, 'Creating your summary...', threadId);
+		// const promptInjectionProtectionPrompt =
+		// 	createPromptInjectionProtectionPrompt(messages);
+		// const isPromptInjection = await createTextCompletion(
+		// 	this.app,
+		// 	room,
+		// 	read,
+		// 	user,
+		// 	http,
+		// 	promptInjectionProtectionPrompt,
+		// 	threadId
+		// );
+		// if (isPromptInjection) {
+		// 	await notifyMessage(
+		// 		room,
+		// 		read,
+		// 		user,
+		// 		'Prompt injection detected! You are not allowed to summarize messages that have potential attack to the AI model',
+		// 		threadId
+		// 	);
+		// 	throw new Error('Prompt injection detected');
+		// }
 
 		const prompt = createSummaryPrompt(messages);
 		const summary = await createTextCompletion(
@@ -139,12 +135,31 @@ export class SummarizeCommand implements ISlashCommand {
 		}
 	}
 
+	private async getRoomMessages(room: IRoom, read: IRead): Promise<string> {
+		const messages: IMessageRaw[] = await read
+			.getRoomReader()
+			.getMessages(room.id, {
+				limit: 100,
+			});
+
+		const messageTexts: string[] = [];
+		for (const message of messages) {
+			if (message.text) {
+				messageTexts.push(
+					`Message at ${message.createdAt}\n${message.sender.name}: ${message.text}\n`
+				);
+			}
+		}
+
+		return messageTexts.join('\n');
+	}
+
 	private async getThreadMessages(
 		room: IRoom,
 		read: IRead,
 		user: IUser,
 		threadId: string
-	) {
+	): Promise<string> {
 		const threadReader = read.getThreadReader();
 		const thread = await threadReader.getThreadById(threadId);
 
