@@ -43,6 +43,9 @@
         },
         {
             "name": "threads.read"
+        },
+        {
+            "name": "upload.read"
         }
     ]
 }

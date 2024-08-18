@@ -13,6 +13,7 @@ import { notifyMessage } from '../helpers/notifyMessage';
 import { createTextCompletion } from '../helpers/createTextCompletion';
 import {
 	createAssignedTasksPrompt,
+	createFileSummaryPrompt,
 	createFollowUpQuestionsPrompt,
 	createParticipantsSummaryPrompt,
 	createPromptInjectionProtectionPrompt,
@@ -42,12 +43,16 @@ export class SummarizeCommand implements ISlashCommand {
 		const user = context.getSender();
 		const room = context.getRoom();
 		const threadId = context.getThreadId();
+		const addOns = await this.app
+			.getAccessors()
+			.environmentReader.getSettings()
+			.getValueById('add-ons');
 
 		let messages: string;
 		if (!threadId) {
-			messages = await this.getRoomMessages(room, read);
+			messages = await this.getRoomMessages(room, read, user, http, addOns);
 		} else {
-			messages = await this.getThreadMessages(room, read, user, threadId);
+			messages = await this.getThreadMessages(room, read, user, http, threadId);
 		}
 
 		await notifyMessage(room, read, user, messages, threadId);
@@ -100,12 +105,6 @@ export class SummarizeCommand implements ISlashCommand {
 		}
 		await notifyMessage(room, read, user, summary, threadId);
 
-		// summary add-ons
-		const addOns = await this.app
-			.getAccessors()
-			.environmentReader.getSettings()
-			.getValueById('add-ons');
-
 		if (addOns.includes('assigned-tasks')) {
 			const assignedTasksPrompt = createAssignedTasksPrompt(messages);
 			const assignedTasks = await createTextCompletion(
@@ -150,11 +149,50 @@ export class SummarizeCommand implements ISlashCommand {
 		}
 	}
 
-	private async getRoomMessages(room: IRoom, read: IRead): Promise<string> {
+	private async getFileSummary(
+		fileId: string,
+		read: IRead,
+		room: IRoom,
+		user: IUser,
+		http: IHttp,
+		threadId?: string
+	): Promise<string> {
+		const uploadReader = read.getUploadReader();
+		const file = await uploadReader.getById(fileId);
+		if (file && file.type === 'text/plain') {
+			const response = await fetch(file.url, {
+				method: 'GET',
+				headers: {
+					// TODO: add X-Auth-Token and X-User-Id
+				},
+			});
+			const fileContent = await response.text();
+			const fileSummaryPrompt = createFileSummaryPrompt(fileContent);
+			return createTextCompletion(
+				this.app,
+				room,
+				read,
+				user,
+				http,
+				fileSummaryPrompt,
+				threadId
+			);
+		}
+		return 'File type is not supported';
+	}
+
+	private async getRoomMessages(
+		room: IRoom,
+		read: IRead,
+		user: IUser,
+		http: IHttp,
+		addOns: string[]
+	): Promise<string> {
 		const messages: IMessageRaw[] = await read
 			.getRoomReader()
 			.getMessages(room.id, {
 				limit: 100,
+				sort: { createdAt: 'asc' },
 			});
 
 		const messageTexts: string[] = [];
@@ -164,8 +202,17 @@ export class SummarizeCommand implements ISlashCommand {
 					`Message at ${message.createdAt}\n${message.sender.name}: ${message.text}\n`
 				);
 			}
+			if (message.file) {
+				const fileSummary = await this.getFileSummary(
+					message.file._id,
+					read,
+					room,
+					user,
+					http
+				);
+				messageTexts.push('File Summary: ' + fileSummary);
+			}
 		}
-
 		return messageTexts.join('\n');
 	}
 
@@ -173,6 +220,7 @@ export class SummarizeCommand implements ISlashCommand {
 		room: IRoom,
 		read: IRead,
 		user: IUser,
+		http: IHttp,
 		threadId: string
 	): Promise<string> {
 		const threadReader = read.getThreadReader();
@@ -187,6 +235,16 @@ export class SummarizeCommand implements ISlashCommand {
 		for (const message of thread) {
 			if (message.text) {
 				messageTexts.push(`${message.sender.name}: ${message.text}`);
+			}
+			if (message.file) {
+				const fileSummary = await this.getFileSummary(
+					message.file._id,
+					read,
+					room,
+					user,
+					http
+				);
+				messageTexts.push('File Summary: ' + fileSummary);
 			}
 		}
 
