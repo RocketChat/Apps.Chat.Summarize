@@ -51,18 +51,17 @@ quickly turns messages in channels, DMs, or threads into a concise summary, boos
     cd app && npm install
   ```
   
-  <li>In order to install Rocket.Chat Apps on your server, the server must be in development mode. Enable Apps development mode by navigating to <i>Administration > General > Apps</i> and turn on "Enable development mode".</li>
+  <li>To install private Rocket.Chat Apps on your server, it must be in development mode. Enable Apps development mode by navigating to <i>Administration > General > Apps</i> and turn on "Enable development mode".</li>
   
   <li>Deploy the app to the server </li>
   
   ```
-  rc-apps deploy --url http://localhost:3000 --username <username> --password <password>
+  rc-apps deploy --url <server_url> --username <username> --password <password>
   ```
   
-  Where:
-  http://localhost:3000 is your local server URL (if you are running in another port, change the 3000 to the appropriate port).
-  `username` is the username of your admin user.
-  `password` is the password of your admin user.
+  - If you are running server locally, `server_url` is http://localhost:3000. If you are running in another port, change the 3000 to the appropriate port.
+  - `username` is the username of your admin user.
+  - `password` is the password of your admin user.
 </ol>
 
 <h2>How to use 💬</h2>
