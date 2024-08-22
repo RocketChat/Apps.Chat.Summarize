@@ -47,12 +47,37 @@ export class SummarizeCommand implements ISlashCommand {
 			.getAccessors()
 			.environmentReader.getSettings()
 			.getValueById('add-ons');
+		const xAuthToken = await this.app
+			.getAccessors()
+			.environmentReader.getSettings()
+			.getValueById('x-auth-token');
+		const xUserId = await this.app
+			.getAccessors()
+			.environmentReader.getSettings()
+			.getValueById('x-user-id');
 
 		let messages: string;
 		if (!threadId) {
-			messages = await this.getRoomMessages(room, read, user, http, addOns);
+			messages = await this.getRoomMessages(
+				room,
+				read,
+				user,
+				http,
+				addOns,
+				xAuthToken,
+				xUserId
+			);
 		} else {
-			messages = await this.getThreadMessages(room, read, user, http, threadId);
+			messages = await this.getThreadMessages(
+				room,
+				read,
+				user,
+				http,
+				threadId,
+				addOns,
+				xAuthToken,
+				xUserId
+			);
 		}
 
 		await notifyMessage(room, read, user, messages, threadId);
@@ -155,6 +180,8 @@ export class SummarizeCommand implements ISlashCommand {
 		room: IRoom,
 		user: IUser,
 		http: IHttp,
+		xAuthToken: string,
+		xUserId: string,
 		threadId?: string
 	): Promise<string> {
 		const uploadReader = read.getUploadReader();
@@ -163,7 +190,8 @@ export class SummarizeCommand implements ISlashCommand {
 			const response = await fetch(file.url, {
 				method: 'GET',
 				headers: {
-					// TODO: add X-Auth-Token and X-User-Id
+					'X-Auth-Token': xAuthToken,
+					'X-User-Id': xUserId,
 				},
 			});
 			const fileContent = await response.text();
@@ -186,7 +214,9 @@ export class SummarizeCommand implements ISlashCommand {
 		read: IRead,
 		user: IUser,
 		http: IHttp,
-		addOns: string[]
+		addOns: string[],
+		xAuthToken: string,
+		xUserId: string
 	): Promise<string> {
 		const messages: IMessageRaw[] = await read
 			.getRoomReader()
@@ -202,13 +232,24 @@ export class SummarizeCommand implements ISlashCommand {
 					`Message at ${message.createdAt}\n${message.sender.name}: ${message.text}\n`
 				);
 			}
-			if (message.file) {
+			if (addOns.includes('file-summary') && message.file) {
+				if (!xAuthToken || !xUserId) {
+					await notifyMessage(
+						room,
+						read,
+						user,
+						'Personal Access Token and User ID must be filled in settings to enable file summary add-on'
+					);
+					continue;
+				}
 				const fileSummary = await this.getFileSummary(
 					message.file._id,
 					read,
 					room,
 					user,
-					http
+					http,
+					xAuthToken,
+					xUserId
 				);
 				messageTexts.push('File Summary: ' + fileSummary);
 			}
@@ -221,7 +262,10 @@ export class SummarizeCommand implements ISlashCommand {
 		read: IRead,
 		user: IUser,
 		http: IHttp,
-		threadId: string
+		threadId: string,
+		addOns: string[],
+		xAuthToken: string,
+		xUserId: string
 	): Promise<string> {
 		const threadReader = read.getThreadReader();
 		const thread = await threadReader.getThreadById(threadId);
@@ -236,13 +280,25 @@ export class SummarizeCommand implements ISlashCommand {
 			if (message.text) {
 				messageTexts.push(`${message.sender.name}: ${message.text}`);
 			}
-			if (message.file) {
+			if (addOns.includes('file-summary') && message.file) {
+				if (!xAuthToken || !xUserId) {
+					await notifyMessage(
+						room,
+						read,
+						user,
+						'Personal Access Token and User ID must be filled in settings to enable file summary add-on'
+					);
+					continue;
+				}
 				const fileSummary = await this.getFileSummary(
 					message.file._id,
 					read,
 					room,
 					user,
-					http
+					http,
+					xAuthToken,
+					xUserId,
+					threadId
 				);
 				messageTexts.push('File Summary: ' + fileSummary);
 			}
