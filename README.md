@@ -44,6 +44,11 @@ quickly turns messages in channels, DMs, or threads into a concise summary, boos
  ```
     git clone https://github.com/RocketChat/Apps.Chat.Summarize.git
  ```
+  <li>Navigate to the repository</li>
+    
+ ```
+    cd Apps.Chat.Summarize
+ ```
   
   <li>Install app dependencies</li>
   
