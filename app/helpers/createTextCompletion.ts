@@ -94,18 +94,15 @@ async function handleResponse(
     .environmentReader.getSettings()
     .getValueById(SettingEnum.AI_MODEL_API_URL);
 
-
-    const safeUrl = cleanApiUrl(apiUrl)
-
     switch (aiProvider) {
         case SettingEnum.ROCKETCHAT_INTERNAL_MODEL:
             return await handleInternalLLM(body, app, http);
 
         case SettingEnum.SELF_HOSTED_MODEL:
-            return await handleSelfHostedModel(body, app, http, safeUrl);
+            return await handleSelfHostedModel(body, app, http, apiUrl);
 
         case SettingEnum.OPEN_AI:
-            return await handleOpenAI(body, app, http, safeUrl, apiKey);
+            return await handleOpenAI(body, app, http, apiUrl, apiKey);
 
         case SettingEnum.GEMINI:
             return await handleGemini(body, app, http, apiKey);
@@ -173,7 +170,7 @@ async function handleSelfHostedModel(
 
 
         const response: IHttpResponse = await http.post(
-            `${apiUrl}/api/chat`,
+            `${apiUrl}`,
             {
                 headers: {
                     'Content-Type': 'application/json',
@@ -215,7 +212,7 @@ async function handleOpenAI(
         }
 
         const response: IHttpResponse = await http.post(
-            `${apiUrl}/v1/chat/completions`,
+            `${apiUrl}`,
             {
                 headers: {
                     'Content-Type': 'application/json',
@@ -270,10 +267,6 @@ async function handleGemini(
         app.getLogger().log(`Error in handleGemini: ${error.message}`);
         return "Something went wrong. Please try again later.";
     }
-}
-
-function cleanApiUrl(apiUrl: string): string {
-    return apiUrl.replace(/(\/v1\/chat\/completions|\/api\/chat|\/chat\/completions|\/v1\/chat|\/api\/generate)\/?$/, '');
 }
 
 function convertToGeminiFormat(openAIBody: OpenAIBody): GeminiBody {
