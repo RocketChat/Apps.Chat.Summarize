@@ -67,6 +67,11 @@ quickly turns messages in channels, DMs, or threads into a concise summary, boos
   - If you are running server locally, `server_url` is http://localhost:3000. If you are running in another port, change the 3000 to the appropriate port.
   - `username` is the username of your admin user.
   - `password` is the password of your admin user.
+
+  <li> Open the App, by navigating to <i>Administration > Marketplace > Private Apps</i>. You should see the app listed there. Click on the App name to open the app.</li>
+
+  <li> Select the <i>Settings</i> tab and enter the LLM API Host URL. This is the URL of the LLM API you want to use. For example, if you are using OpenAI's GPT-3.5, the URL would be <a>https://api.openai.com</a> . If you are using a different LLM, enter the appropriate URL. Without any suffixes.</li>
+  <li> If the LLM provider requires an API key, enter the API key in the <i>API Key</i> field. This is required for authentication with the LLM provider. Local deployments usually don't require an API key.</li>
 </ol>
 
 <h2>How to use 💬</h2>
