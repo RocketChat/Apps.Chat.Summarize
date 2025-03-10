@@ -77,7 +77,7 @@ export async function createTextCompletion(
 		const { choices } = response.data;
 		return choices[0].message.content;
 	} catch (error) {
-		app.getLogger().log(`Error in handleInternalLLM: ${error.message}`);
+		app.getLogger().log(`Error in createTextCompletion: ${error.message}`);
 		return 'Something went wrong. Please try again later.';
 	}
 }
