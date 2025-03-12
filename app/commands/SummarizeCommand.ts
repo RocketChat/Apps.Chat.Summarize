@@ -26,9 +26,9 @@ import { IMessageRaw } from '@rocket.chat/apps-engine/definition/messages';
 export class SummarizeCommand implements ISlashCommand {
 	public command = 'chat-summary';
 	public i18nParamsExample =
-		'Summarize messages in a thread or channel [today|week]';
+		'Summarize messages in a thread or channel [today|week|unread]';
 	public i18nDescription =
-		'Generates a summary of recent messages. Use "today" or "week" to filter by time.';
+		'Generates a summary of recent messages. Use "today", "week", or "unread" to filter the messages';
 	public providesPreview = false;
 	private readonly app: App;
 
