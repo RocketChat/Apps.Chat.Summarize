@@ -46,35 +46,52 @@ export class SummarizeCommand implements ISlashCommand {
 		const room = context.getRoom();
 		const threadId = context.getThreadId();
 
-		const args = context.getArguments();
-		const filter = args[0]?.toLowerCase();
+		const [subcommand] = context.getArguments();
+		const filter = subcommand.toLowerCase();
 
 		let unreadCount: number | undefined;
 		let startDate: Date | undefined;
 		const now = new Date();
 
-		switch (filter) {
-			case 'today':
-				startDate = new Date(
-					now.getFullYear(),
-					now.getMonth(),
-					now.getDate(),
-					0,
-					0,
-					0,
-					0
-				);
-				break;
-			case 'week':
-				startDate = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
-				break;
-			case 'unread':
-				unreadCount = await read
-					.getUserReader()
-					.getUserUnreadMessageCount(user.id);
-				break;
-			default:
-				startDate = undefined;
+		if (!subcommand) {
+			startDate = undefined;
+		} else {
+			switch (filter) {
+				case 'today':
+					startDate = new Date(
+						now.getFullYear(),
+						now.getMonth(),
+						now.getDate(),
+						0,
+						0,
+						0,
+						0
+					);
+					break;
+				case 'week':
+					startDate = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+					break;
+				case 'unread':
+					unreadCount = await read
+						.getUserReader()
+						.getUserUnreadMessageCount(user.id);
+					break;
+				default:
+					await notifyMessage(
+						room,
+						read,
+						user,
+						`Please enter a valid command!
+						
+						You can try: 
+						\t 1. /chat-summary
+						\t 2. /chat-summary today
+						\t 3. /chat-summary week
+						\t 4. /chat-summary unread
+						`
+					);
+					return;
+			}
 		}
 
 		const addOns = await this.app
@@ -261,7 +278,7 @@ export class SummarizeCommand implements ISlashCommand {
 		const messages: IMessageRaw[] = await read
 			.getRoomReader()
 			.getMessages(room.id, {
-				limit: unreadCount,
+				limit: Math.max(unreadCount || 100, 100),
 				sort: { createdAt: 'asc' },
 			});
 
@@ -337,6 +354,9 @@ export class SummarizeCommand implements ISlashCommand {
 		}
 
 		if (unreadCount && unreadCount > 0) {
+			if (unreadCount > 100) {
+				unreadCount = 100;
+			}
 			filteredMessages = filteredMessages.slice(-unreadCount);
 		}
 
