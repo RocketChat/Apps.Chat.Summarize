@@ -25,8 +25,10 @@ import { IMessageRaw } from '@rocket.chat/apps-engine/definition/messages';
 
 export class SummarizeCommand implements ISlashCommand {
 	public command = 'chat-summary';
-	public i18nParamsExample = 'Summarize messages in a thread or channel';
-	public i18nDescription = '';
+	public i18nParamsExample =
+		'Summarize messages in a thread or channel [today|week]';
+	public i18nDescription =
+		'Generates a summary of recent messages. Use "today" or "week" to filter by time.';
 	public providesPreview = false;
 	private readonly app: App;
 
@@ -43,6 +45,26 @@ export class SummarizeCommand implements ISlashCommand {
 		const user = context.getSender();
 		const room = context.getRoom();
 		const threadId = context.getThreadId();
+
+		const args = context.getArguments();
+		const timeFilter = args[0]?.toLowerCase();
+
+		let startDate: Date | undefined;
+		const now = new Date();
+
+		switch (timeFilter) {
+			case 'today':
+				startDate = new Date(
+					Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate())
+				);
+				break;
+			case 'week':
+				startDate = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+				break;
+			default:
+				startDate = undefined;
+		}
+
 		const addOns = await this.app
 			.getAccessors()
 			.environmentReader.getSettings()
@@ -65,7 +87,8 @@ export class SummarizeCommand implements ISlashCommand {
 				http,
 				addOns,
 				xAuthToken,
-				xUserId
+				xUserId,
+				startDate
 			);
 		} else {
 			messages = await this.getThreadMessages(
@@ -76,7 +99,8 @@ export class SummarizeCommand implements ISlashCommand {
 				threadId,
 				addOns,
 				xAuthToken,
-				xUserId
+				xUserId,
+				startDate
 			);
 		}
 
@@ -216,7 +240,8 @@ export class SummarizeCommand implements ISlashCommand {
 		http: IHttp,
 		addOns: string[],
 		xAuthToken: string,
-		xUserId: string
+		xUserId: string,
+		startDate?: Date
 	): Promise<string> {
 		const messages: IMessageRaw[] = await read
 			.getRoomReader()
@@ -225,8 +250,17 @@ export class SummarizeCommand implements ISlashCommand {
 				sort: { createdAt: 'asc' },
 			});
 
+		let filteredMessages = messages;
+		if (startDate) {
+			const today = new Date();
+			filteredMessages = messages.filter((message) => {
+				const createdAt = new Date(message.createdAt);
+				return createdAt >= startDate && createdAt <= today;
+			});
+		}
+
 		const messageTexts: string[] = [];
-		for (const message of messages) {
+		for (const message of filteredMessages) {
 			if (message.text) {
 				messageTexts.push(
 					`Message at ${message.createdAt}\n${message.sender.name}: ${message.text}\n`
@@ -265,7 +299,8 @@ export class SummarizeCommand implements ISlashCommand {
 		threadId: string,
 		addOns: string[],
 		xAuthToken: string,
-		xUserId: string
+		xUserId: string,
+		startDate?: Date
 	): Promise<string> {
 		const threadReader = read.getThreadReader();
 		const thread = await threadReader.getThreadById(threadId);
@@ -275,8 +310,17 @@ export class SummarizeCommand implements ISlashCommand {
 			throw new Error('Thread not found');
 		}
 
+		let filteredMessages = thread;
+		if (startDate) {
+			const today = new Date();
+			filteredMessages = thread.filter((message) => {
+				if (!message.createdAt) return false;
+				const createdAt = new Date(message.createdAt);
+				return createdAt >= startDate && createdAt <= today;
+			});
+		}
 		const messageTexts: string[] = [];
-		for (const message of thread) {
+		for (const message of filteredMessages) {
 			if (message.text) {
 				messageTexts.push(`${message.sender.name}: ${message.text}`);
 			}
