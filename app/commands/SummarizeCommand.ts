@@ -47,19 +47,31 @@ export class SummarizeCommand implements ISlashCommand {
 		const threadId = context.getThreadId();
 
 		const args = context.getArguments();
-		const timeFilter = args[0]?.toLowerCase();
+		const filter = args[0]?.toLowerCase();
 
+		let unreadCount: number | undefined;
 		let startDate: Date | undefined;
 		const now = new Date();
 
-		switch (timeFilter) {
+		switch (filter) {
 			case 'today':
 				startDate = new Date(
-					Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate())
+					now.getFullYear(),
+					now.getMonth(),
+					now.getDate(),
+					0,
+					0,
+					0,
+					0
 				);
 				break;
 			case 'week':
 				startDate = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+				break;
+			case 'unread':
+				unreadCount = await read
+					.getUserReader()
+					.getUserUnreadMessageCount(user.id);
 				break;
 			default:
 				startDate = undefined;
@@ -88,7 +100,8 @@ export class SummarizeCommand implements ISlashCommand {
 				addOns,
 				xAuthToken,
 				xUserId,
-				startDate
+				startDate,
+				unreadCount
 			);
 		} else {
 			messages = await this.getThreadMessages(
@@ -100,7 +113,8 @@ export class SummarizeCommand implements ISlashCommand {
 				addOns,
 				xAuthToken,
 				xUserId,
-				startDate
+				startDate,
+				unreadCount
 			);
 		}
 
@@ -241,12 +255,13 @@ export class SummarizeCommand implements ISlashCommand {
 		addOns: string[],
 		xAuthToken: string,
 		xUserId: string,
-		startDate?: Date
+		startDate?: Date,
+		unreadCount?: number
 	): Promise<string> {
 		const messages: IMessageRaw[] = await read
 			.getRoomReader()
 			.getMessages(room.id, {
-				limit: 100,
+				limit: unreadCount,
 				sort: { createdAt: 'asc' },
 			});
 
@@ -300,7 +315,8 @@ export class SummarizeCommand implements ISlashCommand {
 		addOns: string[],
 		xAuthToken: string,
 		xUserId: string,
-		startDate?: Date
+		startDate?: Date,
+		unreadCount?: number
 	): Promise<string> {
 		const threadReader = read.getThreadReader();
 		const thread = await threadReader.getThreadById(threadId);
@@ -319,6 +335,11 @@ export class SummarizeCommand implements ISlashCommand {
 				return createdAt >= startDate && createdAt <= today;
 			});
 		}
+
+		if (unreadCount && unreadCount > 0) {
+			filteredMessages = filteredMessages.slice(-unreadCount);
+		}
+
 		const messageTexts: string[] = [];
 		for (const message of filteredMessages) {
 			if (message.text) {
