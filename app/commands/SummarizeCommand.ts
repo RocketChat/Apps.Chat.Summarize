@@ -278,7 +278,7 @@ export class SummarizeCommand implements ISlashCommand {
 		const messages: IMessageRaw[] = await read
 			.getRoomReader()
 			.getMessages(room.id, {
-				limit: Math.max(unreadCount || 100, 100),
+				limit: Math.min(unreadCount || 100, 100),
 				sort: { createdAt: 'asc' },
 			});
 
