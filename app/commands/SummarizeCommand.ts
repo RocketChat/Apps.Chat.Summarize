@@ -25,8 +25,10 @@ import { IMessageRaw } from '@rocket.chat/apps-engine/definition/messages';
 
 export class SummarizeCommand implements ISlashCommand {
 	public command = 'chat-summary';
-	public i18nParamsExample = 'Summarize messages in a thread or channel';
-	public i18nDescription = '';
+	public i18nParamsExample =
+		'Summarize messages in a thread or channel [today|week|unread]';
+	public i18nDescription =
+		'Generates a summary of recent messages. Use "today", "week", or "unread" to filter the messages';
 	public providesPreview = false;
 	private readonly app: App;
 
@@ -43,6 +45,55 @@ export class SummarizeCommand implements ISlashCommand {
 		const user = context.getSender();
 		const room = context.getRoom();
 		const threadId = context.getThreadId();
+
+		const [subcommand] = context.getArguments();
+		const filter = subcommand.toLowerCase();
+
+		let unreadCount: number | undefined;
+		let startDate: Date | undefined;
+		const now = new Date();
+
+		if (!subcommand) {
+			startDate = undefined;
+		} else {
+			switch (filter) {
+				case 'today':
+					startDate = new Date(
+						now.getFullYear(),
+						now.getMonth(),
+						now.getDate(),
+						0,
+						0,
+						0,
+						0
+					);
+					break;
+				case 'week':
+					startDate = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+					break;
+				case 'unread':
+					unreadCount = await read
+						.getUserReader()
+						.getUserUnreadMessageCount(user.id);
+					break;
+				default:
+					await notifyMessage(
+						room,
+						read,
+						user,
+						`Please enter a valid command!
+						
+						You can try: 
+						\t 1. /chat-summary
+						\t 2. /chat-summary today
+						\t 3. /chat-summary week
+						\t 4. /chat-summary unread
+						`
+					);
+					return;
+			}
+		}
+
 		const addOns = await this.app
 			.getAccessors()
 			.environmentReader.getSettings()
@@ -65,7 +116,9 @@ export class SummarizeCommand implements ISlashCommand {
 				http,
 				addOns,
 				xAuthToken,
-				xUserId
+				xUserId,
+				startDate,
+				unreadCount
 			);
 		} else {
 			messages = await this.getThreadMessages(
@@ -76,7 +129,9 @@ export class SummarizeCommand implements ISlashCommand {
 				threadId,
 				addOns,
 				xAuthToken,
-				xUserId
+				xUserId,
+				startDate,
+				unreadCount
 			);
 		}
 
@@ -216,17 +271,28 @@ export class SummarizeCommand implements ISlashCommand {
 		http: IHttp,
 		addOns: string[],
 		xAuthToken: string,
-		xUserId: string
+		xUserId: string,
+		startDate?: Date,
+		unreadCount?: number
 	): Promise<string> {
 		const messages: IMessageRaw[] = await read
 			.getRoomReader()
 			.getMessages(room.id, {
-				limit: 100,
+				limit: Math.min(unreadCount || 100, 100),
 				sort: { createdAt: 'asc' },
 			});
 
+		let filteredMessages = messages;
+		if (startDate) {
+			const today = new Date();
+			filteredMessages = messages.filter((message) => {
+				const createdAt = new Date(message.createdAt);
+				return createdAt >= startDate && createdAt <= today;
+			});
+		}
+
 		const messageTexts: string[] = [];
-		for (const message of messages) {
+		for (const message of filteredMessages) {
 			if (message.text) {
 				messageTexts.push(
 					`Message at ${message.createdAt}\n${message.sender.name}: ${message.text}\n`
@@ -265,7 +331,9 @@ export class SummarizeCommand implements ISlashCommand {
 		threadId: string,
 		addOns: string[],
 		xAuthToken: string,
-		xUserId: string
+		xUserId: string,
+		startDate?: Date,
+		unreadCount?: number
 	): Promise<string> {
 		const threadReader = read.getThreadReader();
 		const thread = await threadReader.getThreadById(threadId);
@@ -275,8 +343,25 @@ export class SummarizeCommand implements ISlashCommand {
 			throw new Error('Thread not found');
 		}
 
+		let filteredMessages = thread;
+		if (startDate) {
+			const today = new Date();
+			filteredMessages = thread.filter((message) => {
+				if (!message.createdAt) return false;
+				const createdAt = new Date(message.createdAt);
+				return createdAt >= startDate && createdAt <= today;
+			});
+		}
+
+		if (unreadCount && unreadCount > 0) {
+			if (unreadCount > 100) {
+				unreadCount = 100;
+			}
+			filteredMessages = filteredMessages.slice(-unreadCount);
+		}
+
 		const messageTexts: string[] = [];
-		for (const message of thread) {
+		for (const message of filteredMessages) {
 			if (message.text) {
 				messageTexts.push(`${message.sender.name}: ${message.text}`);
 			}
