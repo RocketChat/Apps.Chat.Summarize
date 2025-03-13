@@ -19,9 +19,11 @@ import {
 	createPromptInjectionProtectionPrompt,
 	createSummaryPrompt,
 	createSummaryPromptByTopics,
+	createUserHelpPrompt,
 } from '../constants/prompts';
 import { App } from '@rocket.chat/apps-engine/definition/App';
 import { IMessageRaw } from '@rocket.chat/apps-engine/definition/messages';
+import { WELCOME_MESSAGE } from '../constants/dialogue';
 
 export class SummarizeCommand implements ISlashCommand {
 	public command = 'chat-summary';
@@ -46,6 +48,7 @@ export class SummarizeCommand implements ISlashCommand {
 		const room = context.getRoom();
 		const threadId = context.getThreadId();
 
+		const command = context.getArguments();
 		const [subcommand] = context.getArguments();
 		const filter = subcommand.toLowerCase();
 
@@ -76,6 +79,8 @@ export class SummarizeCommand implements ISlashCommand {
 						.getUserReader()
 						.getUserUnreadMessageCount(user.id);
 					break;
+				case 'help':
+					break;
 				default:
 					await notifyMessage(
 						room,
@@ -88,6 +93,7 @@ export class SummarizeCommand implements ISlashCommand {
 						\t 2. /chat-summary today
 						\t 3. /chat-summary week
 						\t 4. /chat-summary unread
+						\t 4. /chat-summary help
 						`
 					);
 					return;
@@ -106,6 +112,27 @@ export class SummarizeCommand implements ISlashCommand {
 			.getAccessors()
 			.environmentReader.getSettings()
 			.getValueById('x-user-id');
+
+		let helpResonse: string;
+		if (filter === 'help') {
+			await notifyMessage(room, read, user, WELCOME_MESSAGE, threadId);
+
+			command.shift();
+			const helpRequest = command.join(' ');
+			
+			const prompt = createUserHelpPrompt(helpRequest);
+			helpResonse = await createTextCompletion(
+				this.app,
+				room,
+				read,
+				user,
+				http,
+				prompt,
+				threadId
+			);
+			await notifyMessage(room, read, user, helpResonse, threadId);
+			return;
+		}
 
 		let messages: string;
 		if (!threadId) {
