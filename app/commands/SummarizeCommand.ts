@@ -354,7 +354,6 @@ export class SummarizeCommand implements ISlashCommand {
 	): Promise<string> {
 		const threadReader = read.getThreadReader();
 		const thread = await threadReader.getThreadById(threadId);
-		this.app.getLogger().log('thread', thread);
 		if (!thread) {
 			await notifyMessage(room, read, user, 'Thread not found');
 			throw new Error('Thread not found');
