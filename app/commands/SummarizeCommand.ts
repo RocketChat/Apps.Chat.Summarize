@@ -47,7 +47,7 @@ export class SummarizeCommand implements ISlashCommand {
 		const threadId = context.getThreadId();
 
 		const [subcommand] = context.getArguments();
-		const filter = subcommand.toLowerCase();
+		const filter = subcommand ? subcommand.toLowerCase() : '';
 
 		let unreadCount: number | undefined;
 		let startDate: Date | undefined;
