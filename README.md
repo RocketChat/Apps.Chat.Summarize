@@ -103,8 +103,8 @@ To summarize messages based on specific timeframes or unread messages, you can n
 - <code>/chat-summary unread</code> – Summarize all unread messages for the user.
 
 <h3>Help Command:</h3>
-<code>/chat-summary help</code> – Displays the welcome message and Frequently Asked Questions.
-<code>/chat-summary help <question></code> – Provides an answer from the AI.
+- <code>/chat-summary help</code> – Displays the welcome message and Frequently Asked Questions.
+- <code>/chat-summary help <question></code> – Provides an answer from the AI.
 
 <h2>Support us ❤️</h2>
 
