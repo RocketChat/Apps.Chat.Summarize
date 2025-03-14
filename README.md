@@ -13,7 +13,7 @@ quickly turns messages in channels, DMs, or threads into a concise summary, boos
 </div>
 
 <h2>Features 🚀</h2>
-<ul>
+<li>
   <li>Summarize messages in channel / DM / thread</li> 
   <li>Capture assigned tasks & participant summary in dialogue</li>
   <li>Suggest follow-up questions for quick reply </li>
@@ -26,6 +26,11 @@ quickly turns messages in channels, DMs, or threads into a concise summary, boos
     <li>Summarize messages from the current week with <code>/chat-summary week</code></li>
     <li>Summarize all unread messages with <code>/chat-summary unread</code></li>
   </ul>
+  <li>Get help with the following commands:</li> 
+    <ul> 
+      <li><code>/chat-summary help</code> – Displays the welcome message and Frequently Asked Questions.</li> 
+      <li><code>/chat-summary help &lt;question&gt;</code> – Provides an answer from the AI.</li> 
+    </ul> 
 </ul>
 
 <h2 >How to set up 💻</h2>
@@ -96,6 +101,10 @@ To summarize messages based on specific timeframes or unread messages, you can n
 - <code>/chat-summary today</code> – Summarize messages from today.
 - <code>/chat-summary week</code> – Summarize messages from the current week (past 7 days).
 - <code>/chat-summary unread</code> – Summarize all unread messages for the user.
+
+<h3>Help Command:</h3>
+<code>/chat-summary help</code> – Displays the welcome message and Frequently Asked Questions.
+<code>/chat-summary help <question></code> – Provides an answer from the AI.
 
 <h2>Support us ❤️</h2>
 
