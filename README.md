@@ -85,7 +85,6 @@ quickly turns messages in channels, DMs, or threads into a concise summary, boos
   <li> If the LLM provider requires an API key, enter the API key in the <i>API Key</i> field. This is required for authentication with the LLM provider. Local deployments usually don't require an API key.</li>
 </ol>
 
-
 <h2>How to use 💬</h2>
 
 Once setup is completed, type <code>/chat-summary</code> in the chat box of any channel / DM / thread, and you will see a summary of the messages like the one below.
@@ -104,7 +103,7 @@ To summarize messages based on specific timeframes or unread messages, you can n
 
 <h3>Help Command:</h3>
 - <code>/chat-summary help</code> – Displays the welcome message and Frequently Asked Questions.
-- <code>/chat-summary help <question></code> – Provides an answer from the AI.
+- <code>/chat-summary help < question ></code> – Provides an answer from the AI.
 
 <h2>Support us ❤️</h2>
 
