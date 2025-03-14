@@ -50,7 +50,7 @@ export class SummarizeCommand implements ISlashCommand {
 
 		const command = context.getArguments();
 		const [subcommand] = context.getArguments();
-		const filter = subcommand.toLowerCase();
+		const filter = subcommand ? subcommand.toLowerCase() : '';
 
 		let unreadCount: number | undefined;
 		let startDate: Date | undefined;
@@ -93,7 +93,8 @@ export class SummarizeCommand implements ISlashCommand {
 						\t 2. /chat-summary today
 						\t 3. /chat-summary week
 						\t 4. /chat-summary unread
-						\t 4. /chat-summary help
+						\t 5. /chat-summary help
+						\t 6. /chat-summary help <question>
 						`
 					);
 					return;
