@@ -33,39 +33,39 @@ quickly turns messages in channels, DMs, or threads into a concise summary, boos
 <ol>
   <li>Have a Rocket.Chat server ready. If you don't have a server, see this <a href="https://developer.rocket.chat/v1/docs/server-environment-setup">guide</a>.</li> 
   <li>Install the Rocket.Chat Apps Engine CLI. 
-    ``` 
+      ``` 
       npm install -g @rocket.chat/apps-cli
-    ```  
+      ```  
     Verify if the CLI has been installed 
-    ```  
+      ```  
     rc-apps -v
     # @rocket.chat/apps-cli/1.4.0 darwin-x64 node-v10.15.3
-    ``` 
+      ``` 
   </li>
   <li>Clone the GitHub Repository</li>
     
-    ```
+      ```
       git clone https://github.com/RocketChat/Apps.Chat.Summarize.git
-    ```
+      ```
   <li>Navigate to the repository</li>
     
-    ```
+      ```
       cd Apps.Chat.Summarize
-    ```
+      ```
   
   <li>Install app dependencies</li>
   
-    ```
+      ```
       cd app && npm install
-    ```
+      ```
   
   <li>To install private Rocket.Chat Apps on your server, it must be in development mode. Enable Apps development mode by navigating to <i>Administration > General > Apps</i> and turn on "Enable development mode".</li>
   
   <li>Deploy the app to the server </li>
   
-    ```
+      ```
       rc-apps deploy --url <server_url> --username <username> --password <password>
-    ```
+      ```
   
   - If you are running the server locally, `server_url` is http://localhost:3000. If you are running it on a different port, replace 3000 with the appropriate port.
   - `username` is the admin username.
