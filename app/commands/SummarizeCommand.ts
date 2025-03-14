@@ -23,7 +23,10 @@ import {
 } from '../constants/prompts';
 import { App } from '@rocket.chat/apps-engine/definition/App';
 import { IMessageRaw } from '@rocket.chat/apps-engine/definition/messages';
-import { FREQUENTLY_ASKED_QUESTIONS, WELCOME_MESSAGE } from '../constants/dialogue';
+import {
+	FREQUENTLY_ASKED_QUESTIONS,
+	WELCOME_MESSAGE,
+} from '../constants/dialogue';
 
 export class SummarizeCommand implements ISlashCommand {
 	public command = 'chat-summary';
@@ -118,14 +121,23 @@ export class SummarizeCommand implements ISlashCommand {
 		if (filter === 'help') {
 			if (subcommand === command.join(' ')) {
 				await notifyMessage(room, read, user, WELCOME_MESSAGE, threadId);
-				await notifyMessage(room, read, user, FREQUENTLY_ASKED_QUESTIONS, threadId);
+				await notifyMessage(
+					room,
+					read,
+					user,
+					FREQUENTLY_ASKED_QUESTIONS,
+					threadId
+				);
 				return;
 			}
 
 			command.shift();
 			const helpRequest = command.join(' ');
 
-			const prompt = createUserHelpPrompt(FREQUENTLY_ASKED_QUESTIONS, helpRequest);
+			const prompt = createUserHelpPrompt(
+				FREQUENTLY_ASKED_QUESTIONS,
+				helpRequest
+			);
 			helpResonse = await createTextCompletion(
 				this.app,
 				room,
