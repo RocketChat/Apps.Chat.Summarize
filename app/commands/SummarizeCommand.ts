@@ -57,6 +57,8 @@ export class SummarizeCommand implements ISlashCommand {
 
 		let unreadCount: number | undefined;
 		let startDate: Date | undefined;
+		let username: string | undefined;
+		let anyMatchedUsername = false;
 		const now = new Date();
 
 		if (!subcommand) {
@@ -85,22 +87,7 @@ export class SummarizeCommand implements ISlashCommand {
 				case 'help':
 					break;
 				default:
-					await notifyMessage(
-						room,
-						read,
-						user,
-						`Please enter a valid command!
-						
-						You can try: 
-						\t 1. /chat-summary
-						\t 2. /chat-summary today
-						\t 3. /chat-summary week
-						\t 4. /chat-summary unread
-						\t 5. /chat-summary help
-						\t 6. /chat-summary help <question>
-						`
-					);
-					return;
+					username = filter;
 			}
 		}
 
@@ -162,7 +149,9 @@ export class SummarizeCommand implements ISlashCommand {
 				xAuthToken,
 				xUserId,
 				startDate,
-				unreadCount
+				unreadCount,
+				username,
+				anyMatchedUsername
 			);
 		} else {
 			messages = await this.getThreadMessages(
@@ -175,7 +164,9 @@ export class SummarizeCommand implements ISlashCommand {
 				xAuthToken,
 				xUserId,
 				startDate,
-				unreadCount
+				unreadCount,
+				username,
+				anyMatchedUsername
 			);
 		}
 
@@ -317,7 +308,9 @@ export class SummarizeCommand implements ISlashCommand {
 		xAuthToken: string,
 		xUserId: string,
 		startDate?: Date,
-		unreadCount?: number
+		unreadCount?: number,
+		username?: string,
+		anyMatchedUsername?: boolean
 	): Promise<string> {
 		const messages: IMessageRaw[] = await read
 			.getRoomReader()
@@ -327,6 +320,28 @@ export class SummarizeCommand implements ISlashCommand {
 			});
 
 		let filteredMessages = messages;
+
+		if (username) {
+			filteredMessages = messages.filter((message) => {
+				const isMatched = message.sender.username === username;
+				if (isMatched) {
+					anyMatchedUsername = true;
+				}
+				return isMatched;
+			});
+			if (!anyMatchedUsername) {
+				return `Please enter a valid command!
+				You can try: 
+				\t 1. /chat-summary
+				\t 2. /chat-summary today
+				\t 3. /chat-summary week
+				\t 4. /chat-summary unread
+				\t 5. /chat-summary <username>
+				\t 6. /chat-summary help
+				\t 7. /chat-summary help <question>`;
+			}
+		}
+
 		if (startDate) {
 			const today = new Date();
 			filteredMessages = messages.filter((message) => {
@@ -377,17 +392,36 @@ export class SummarizeCommand implements ISlashCommand {
 		xAuthToken: string,
 		xUserId: string,
 		startDate?: Date,
-		unreadCount?: number
+		unreadCount?: number,
+		username?: string,
+		anyMatchedUsername?: boolean
 	): Promise<string> {
 		const threadReader = read.getThreadReader();
 		const thread = await threadReader.getThreadById(threadId);
-
 		if (!thread) {
 			await notifyMessage(room, read, user, 'Thread not found');
 			throw new Error('Thread not found');
 		}
 
 		let filteredMessages = thread;
+		if (username) {
+			filteredMessages = thread.filter((message) => {
+				const isMatched = message.sender.username === username;
+				if (isMatched) {
+					anyMatchedUsername = true;
+				}
+				return isMatched;
+			});
+			if (!anyMatchedUsername) {
+				return `Please enter a valid command!
+				You can try: 
+				\t 1. /chat-summary
+				\t 2. /chat-summary today
+				\t 3. /chat-summary week
+				\t 4. /chat-summary unread
+				\t 5. /chat-summary <username>`;
+			}
+		}
 		if (startDate) {
 			const today = new Date();
 			filteredMessages = thread.filter((message) => {
