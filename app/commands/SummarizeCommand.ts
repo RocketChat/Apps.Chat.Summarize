@@ -57,7 +57,7 @@ export class SummarizeCommand implements ISlashCommand {
 
 		let unreadCount: number | undefined;
 		let startDate: Date | undefined;
-		let username: string | undefined;
+		let usernames: string[] | undefined;
 		let anyMatchedUsername = false;
 		const now = new Date();
 
@@ -87,7 +87,7 @@ export class SummarizeCommand implements ISlashCommand {
 				case 'help':
 					break;
 				default:
-					username = filter;
+					usernames = command.map((name) => name.replace(/^@/, ''));
 			}
 		}
 
@@ -150,7 +150,7 @@ export class SummarizeCommand implements ISlashCommand {
 				xUserId,
 				startDate,
 				unreadCount,
-				username,
+				usernames,
 				anyMatchedUsername
 			);
 		} else {
@@ -165,7 +165,7 @@ export class SummarizeCommand implements ISlashCommand {
 				xUserId,
 				startDate,
 				unreadCount,
-				username,
+				usernames,
 				anyMatchedUsername
 			);
 		}
@@ -309,7 +309,7 @@ export class SummarizeCommand implements ISlashCommand {
 		xUserId: string,
 		startDate?: Date,
 		unreadCount?: number,
-		username?: string,
+		usernames?: string[],
 		anyMatchedUsername?: boolean
 	): Promise<string> {
 		const messages: IMessageRaw[] = await read
@@ -321,14 +321,15 @@ export class SummarizeCommand implements ISlashCommand {
 
 		let filteredMessages = messages;
 
-		if (username) {
+		if (usernames) {
 			filteredMessages = messages.filter((message) => {
-				const isMatched = message.sender.username === username;
+				const isMatched = usernames.includes(message.sender.username);
 				if (isMatched) {
 					anyMatchedUsername = true;
 				}
 				return isMatched;
 			});
+
 			if (!anyMatchedUsername) {
 				return `Please enter a valid command!
 				You can try: 
@@ -336,7 +337,7 @@ export class SummarizeCommand implements ISlashCommand {
 				\t 2. /chat-summary today
 				\t 3. /chat-summary week
 				\t 4. /chat-summary unread
-				\t 5. /chat-summary <username>
+				\t 5. /chat-summary @<username> or /chat-summary @<username1> @<username2>
 				\t 6. /chat-summary help
 				\t 7. /chat-summary help <question>`;
 			}
@@ -393,7 +394,7 @@ export class SummarizeCommand implements ISlashCommand {
 		xUserId: string,
 		startDate?: Date,
 		unreadCount?: number,
-		username?: string,
+		usernames?: string[],
 		anyMatchedUsername?: boolean
 	): Promise<string> {
 		const threadReader = read.getThreadReader();
@@ -404,14 +405,15 @@ export class SummarizeCommand implements ISlashCommand {
 		}
 
 		let filteredMessages = thread;
-		if (username) {
+		if (usernames) {
 			filteredMessages = thread.filter((message) => {
-				const isMatched = message.sender.username === username;
+				const isMatched = usernames.includes(message.sender.username);
 				if (isMatched) {
 					anyMatchedUsername = true;
 				}
 				return isMatched;
 			});
+
 			if (!anyMatchedUsername) {
 				return `Please enter a valid command!
 				You can try: 

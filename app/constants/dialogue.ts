@@ -18,6 +18,7 @@ It helps users quickly catch up on conversations by providing concise summaries,
 - Support custom LLM (Large Language Model) selection.
 - Detect and block malicious prompt injections.
 - Filter summaries by time (today, week, or unread messages).
+- Summarize messages by specific users using /chat-summary @username or multiple users like /chat-summary @username1 @username2.
 
 *Q4: What LLMs (Large Language Models) are supported?*
 *A*: The app supports custom LLM selection. You can use popular LLMs like OpenAI's GPT-3.5 or any other LLM by providing the appropriate API host URL and API key (if required).
@@ -27,6 +28,8 @@ It helps users quickly catch up on conversations by providing concise summaries,
 /chat-summary today - Summarize messages from today.
 /chat-summary week - Summarize messages from the past week.
 /chat-summary unread - Summarize your recent unread messages.
+/chat-summary @username - Summarize messages from a specific user.
+/chat-summary @username1 @username2 - Summarize messages from multiple users.
 
 *Q6: Does the app support file attachments?*
 *A*: Yes, the app can summarize file attachments shared in the chat, provided the content is text-based (e.g., PDFs, text files).

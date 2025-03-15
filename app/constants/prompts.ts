@@ -270,6 +270,8 @@ Use the \`/chat-summary [filter]\` command with the following options:
 - \`today\`: Summarizes messages from the last 24 hours.
 - \`week\`: Summarizes messages from the previous 7 days.
 - \`unread\`: Summarizes your unread messages.
+- \`@username\`: Summarizes messages from a specific user.
+- \`@username1 @username2\`: Summarizes messages from multiple users.
 - *No filter*: Summarizes the full conversation history.
 
 ---
