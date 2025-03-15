@@ -1,5 +1,5 @@
 <div align="center">
-<img width=30% src="https://github.com/user-attachments/assets/a92f27b9-5101-4725-8311-a0e6ada0edc7" alt="chat-summarizer-illustration">
+  <img width=30% src="https://github.com/user-attachments/assets/a92f27b9-5101-4725-8311-a0e6ada0edc7" alt="chat-summarizer-illustration">
 </div>
 
 <h1 align="center">Rocket.Chat AI Chat Summarizer App</h1>
@@ -12,16 +12,27 @@ quickly turns messages in channels, DMs, or threads into a concise summary, boos
   <img width=60% src="https://github.com/user-attachments/assets/b42f85ba-c00c-44a8-a2c0-314081c9ad9a" alt="chat-summarizer-illustration">
 </div>
 
-
 <h2>Features 🚀</h2>
-<ul>
+<li>
   <li>Summarize messages in channel / DM / thread</li> 
   <li>Capture assigned tasks & participant summary in dialogue</li>
   <li>Suggest follow-up questions for quick reply </li>
   <li>Provide file summary of messages attachments</li> 
   <li>Support custom LLM selection</li>
   <li>Detect and block malicious prompt injection</li>
+  <li>New filtering options to summarize messages by time:</li>
+  <ul>
+    <li>Summarize messages from today with <code>/chat-summary today</code></li>
+    <li>Summarize messages from the current week with <code>/chat-summary week</code></li>
+    <li>Summarize all unread messages with <code>/chat-summary unread</code></li>
+  </ul>
+  <li>Get help with the following commands:</li> 
+    <ul> 
+      <li><code>/chat-summary help</code> – Displays the welcome message and Frequently Asked Questions.</li> 
+      <li><code>/chat-summary help &lt;question&gt;</code> – Provides an answer from the AI.</li> 
+    </ul> 
 </ul>
+
 <h2 >How to set up 💻</h2>
 
 <ol>
@@ -79,8 +90,20 @@ quickly turns messages in channels, DMs, or threads into a concise summary, boos
 Once setup is completed, type <code>/chat-summary</code> in the chat box of any channel / DM / thread, and you will see a summary of the messages like the one below.
 
 <div align="center">
-<img width="964" alt="Screenshot 2024-08-21 at 11 08 47 PM" src="https://github.com/user-attachments/assets/2193ee14-ff3f-431b-87af-ad7b1e1083d3">
+  <img width="964" alt="Screenshot 2024-08-21 at 11 08 47 PM" src="https://github.com/user-attachments/assets/2193ee14-ff3f-431b-87af-ad7b1e1083d3">
 </div>
+
+<h3>New Filtering Commands:</h3>
+
+To summarize messages based on specific timeframes or unread messages, you can now use the following commands:
+
+- <code>/chat-summary today</code> – Summarize messages from today.
+- <code>/chat-summary week</code> – Summarize messages from the current week (past 7 days).
+- <code>/chat-summary unread</code> – Summarize all unread messages for the user.
+
+<h3>Help Command:</h3>
+- <code>/chat-summary help</code> – Displays the welcome message and Frequently Asked Questions.
+- <code>/chat-summary help < question ></code> – Provides an answer from the AI.
 
 <h2>Support us ❤️</h2>
 

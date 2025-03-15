@@ -19,9 +19,14 @@ import {
 	createPromptInjectionProtectionPrompt,
 	createSummaryPrompt,
 	createSummaryPromptByTopics,
+	createUserHelpPrompt,
 } from '../constants/prompts';
 import { App } from '@rocket.chat/apps-engine/definition/App';
 import { IMessageRaw } from '@rocket.chat/apps-engine/definition/messages';
+import {
+	FREQUENTLY_ASKED_QUESTIONS,
+	WELCOME_MESSAGE,
+} from '../constants/dialogue';
 
 export class SummarizeCommand implements ISlashCommand {
 	public command = 'chat-summary';
@@ -46,6 +51,7 @@ export class SummarizeCommand implements ISlashCommand {
 		const room = context.getRoom();
 		const threadId = context.getThreadId();
 
+		const command = context.getArguments();
 		const [subcommand] = context.getArguments();
 		const filter = subcommand ? subcommand.toLowerCase() : '';
 
@@ -78,6 +84,8 @@ export class SummarizeCommand implements ISlashCommand {
 						.getUserReader()
 						.getUserUnreadMessageCount(user.id);
 					break;
+				case 'help':
+					break;
 				default:
 					username = filter;
 			}
@@ -95,6 +103,40 @@ export class SummarizeCommand implements ISlashCommand {
 			.getAccessors()
 			.environmentReader.getSettings()
 			.getValueById('x-user-id');
+
+		let helpResonse: string;
+		if (filter === 'help') {
+			if (subcommand === command.join(' ')) {
+				await notifyMessage(room, read, user, WELCOME_MESSAGE, threadId);
+				await notifyMessage(
+					room,
+					read,
+					user,
+					FREQUENTLY_ASKED_QUESTIONS,
+					threadId
+				);
+				return;
+			}
+
+			command.shift();
+			const helpRequest = command.join(' ');
+
+			const prompt = createUserHelpPrompt(
+				FREQUENTLY_ASKED_QUESTIONS,
+				helpRequest
+			);
+			helpResonse = await createTextCompletion(
+				this.app,
+				room,
+				read,
+				user,
+				http,
+				prompt,
+				threadId
+			);
+			await notifyMessage(room, read, user, helpResonse, threadId);
+			return;
+		}
 
 		let messages: string;
 		if (!threadId) {
@@ -294,7 +336,9 @@ export class SummarizeCommand implements ISlashCommand {
 				\t 2. /chat-summary today
 				\t 3. /chat-summary week
 				\t 4. /chat-summary unread
-				\t 5. /chat-summary <username>`;
+				\t 5. /chat-summary <username>
+				\t 6. /chat-summary help
+				\t 7. /chat-summary help <question>`;
 			}
 		}
 
