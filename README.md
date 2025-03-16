@@ -26,6 +26,11 @@ quickly turns messages in channels, DMs, or threads into a concise summary, boos
     <li>Summarize messages from the current week with <code>/chat-summary week</code></li>
     <li>Summarize all unread messages with <code>/chat-summary unread</code></li>
   </ul>
+  <li>Summarize messages by specific users with 
+    <code>/chat-summary @username</code> 
+    or multiple users like 
+    <code>/chat-summary @username1 @username2</code>
+  </li>
   <li>Get help with the following commands:</li> 
     <ul> 
       <li><code>/chat-summary help</code> – Displays the welcome message and Frequently Asked Questions.</li> 
@@ -100,6 +105,8 @@ To summarize messages based on specific timeframes or unread messages, you can n
 - <code>/chat-summary today</code> – Summarize messages from today.
 - <code>/chat-summary week</code> – Summarize messages from the current week (past 7 days).
 - <code>/chat-summary unread</code> – Summarize all unread messages for the user.
+- <code>/chat-summary @username</code> – Summarize messages from a specific user.
+- <code>/chat-summary @username1 @username2</code> – Summarize messages from multiple users.
 
 <h3>Help Command:</h3>
 - <code>/chat-summary help</code> – Displays the welcome message and Frequently Asked Questions.
