@@ -170,6 +170,17 @@ export class SummarizeCommand implements ISlashCommand {
 			);
 		}
 
+		if (!messages || messages.trim().length === 0) {
+			await notifyMessage(
+				room,
+				read,
+				user,
+				'There are no messages to summarize in this channel.',
+				threadId
+			);
+			return;
+		}
+
 		await notifyMessage(room, read, user, messages, threadId);
 
 		// const promptInjectionProtectionPrompt =
