@@ -58,7 +58,7 @@ export class SummarizeCommand implements ISlashCommand {
 		let unreadCount: number | undefined;
 		let startDate: Date | undefined;
 		let usernames: string[] | undefined;
-		let anyMatchedUsername = false;
+		const anyMatchedUsername = false;
 		const now = new Date();
 
 		if (!subcommand) {
@@ -104,7 +104,7 @@ export class SummarizeCommand implements ISlashCommand {
 			.environmentReader.getSettings()
 			.getValueById('x-user-id');
 
-		let helpResonse: string;
+		let helpResponse: string;
 		if (filter === 'help') {
 			if (subcommand === command.join(' ')) {
 				await notifyMessage(room, read, user, WELCOME_MESSAGE, threadId);
@@ -125,7 +125,7 @@ export class SummarizeCommand implements ISlashCommand {
 				FREQUENTLY_ASKED_QUESTIONS,
 				helpRequest
 			);
-			helpResonse = await createTextCompletion(
+			helpResponse = await createTextCompletion(
 				this.app,
 				room,
 				read,
@@ -134,7 +134,7 @@ export class SummarizeCommand implements ISlashCommand {
 				prompt,
 				threadId
 			);
-			await notifyMessage(room, read, user, helpResonse, threadId);
+			await notifyMessage(room, read, user, helpResponse, threadId);
 			return;
 		}
 
@@ -168,6 +168,17 @@ export class SummarizeCommand implements ISlashCommand {
 				usernames,
 				anyMatchedUsername
 			);
+		}
+
+		if (!messages || messages.trim().length === 0) {
+			await notifyMessage(
+				room,
+				read,
+				user,
+				'There are no messages to summarize in this channel.',
+				threadId
+			);
+			return;
 		}
 
 		await notifyMessage(room, read, user, messages, threadId);
@@ -470,7 +481,9 @@ export class SummarizeCommand implements ISlashCommand {
 		}
 
 		// threadReader repeats the first message once, so here we remove it
-		messageTexts.shift();
+		if (messageTexts.length > 0) {
+			messageTexts.shift();
+		}
 		return messageTexts.join('\n');
 	}
 }
