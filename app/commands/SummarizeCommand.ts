@@ -13,6 +13,9 @@ import { notifyMessage } from '../helpers/notifyMessage';
 import { createTextCompletion } from '../helpers/createTextCompletion';
 import {
 	createAssignedTasksPrompt,
+	createBriefSummaryPrompt,
+	createBulletSummaryPrompt,
+	createDetailedSummaryPrompt,
 	createFileSummaryPrompt,
 	createFollowUpQuestionsPrompt,
 	createParticipantsSummaryPrompt,
@@ -51,17 +54,60 @@ export class SummarizeCommand implements ISlashCommand {
 		const room = context.getRoom();
 		const threadId = context.getThreadId();
 
-		const command = context.getArguments();
-		const [subcommand] = context.getArguments();
-		const filter = subcommand ? subcommand.toLowerCase() : '';
+		const args = context.getArguments();
+		let filter = '';
+		let summaryMode = 'default';
+		const filterKeywords = ['today', 'week', 'unread', 'help'];
+		const summaryModes = ['brief', 'detailed', 'bullet'];
+
+		for (const arg of args) {
+			const lowerArg = arg.toLowerCase();
+			if (filterKeywords.includes(lowerArg)) {
+				filter = lowerArg;
+			} else if (summaryModes.includes(lowerArg)) {
+				summaryMode = lowerArg;
+			}
+		}
+
+		if (filter === 'help') {
+			if (args.join(' ') === 'help') {
+				await notifyMessage(room, read, user, WELCOME_MESSAGE, threadId);
+				await notifyMessage(
+					room,
+					read,
+					user,
+					FREQUENTLY_ASKED_QUESTIONS,
+					threadId
+				);
+				return;
+			}
+
+			args.shift();
+			const helpRequest = args.join(' ');
+			const prompt = createUserHelpPrompt(
+				FREQUENTLY_ASKED_QUESTIONS,
+				helpRequest
+			);
+			const helpResponse = await createTextCompletion(
+				this.app,
+				room,
+				read,
+				user,
+				http,
+				prompt,
+				threadId
+			);
+			await notifyMessage(room, read, user, helpResponse, threadId);
+			return;
+		}
 
 		let unreadCount: number | undefined;
 		let startDate: Date | undefined;
 		let usernames: string[] | undefined;
-		const anyMatchedUsername = false;
+		let anyMatchedUsername = false;
 		const now = new Date();
 
-		if (!subcommand) {
+		if (!filter || filter === '') {
 			startDate = undefined;
 		} else {
 			switch (filter) {
@@ -84,10 +130,8 @@ export class SummarizeCommand implements ISlashCommand {
 						.getUserReader()
 						.getUserUnreadMessageCount(user.id);
 					break;
-				case 'help':
-					break;
 				default:
-					usernames = command.map((name) => name.replace(/^@/, ''));
+					usernames = args.map((name) => name.replace(/^@/, ''));
 			}
 		}
 
@@ -103,41 +147,6 @@ export class SummarizeCommand implements ISlashCommand {
 			.getAccessors()
 			.environmentReader.getSettings()
 			.getValueById('x-user-id');
-
-		let helpResponse: string;
-		if (filter === 'help') {
-			if (subcommand === command.join(' ')) {
-				await notifyMessage(room, read, user, WELCOME_MESSAGE, threadId);
-				await notifyMessage(
-					room,
-					read,
-					user,
-					FREQUENTLY_ASKED_QUESTIONS,
-					threadId
-				);
-				return;
-			}
-
-			command.shift();
-			const helpRequest = command.join(' ');
-
-			const prompt = createUserHelpPrompt(
-				FREQUENTLY_ASKED_QUESTIONS,
-				helpRequest
-			);
-			helpResponse = await createTextCompletion(
-				this.app,
-				room,
-				read,
-				user,
-				http,
-				prompt,
-				threadId
-			);
-			await notifyMessage(room, read, user, helpResponse, threadId);
-			return;
-		}
-
 		let messages: string;
 		if (!threadId) {
 			messages = await this.getRoomMessages(
@@ -205,30 +214,30 @@ export class SummarizeCommand implements ISlashCommand {
 		// 	throw new Error('Prompt injection detected');
 		// }
 
-		let summary: string;
-		if (!threadId) {
-			const prompt = createSummaryPromptByTopics(messages);
-			summary = await createTextCompletion(
-				this.app,
-				room,
-				read,
-				user,
-				http,
-				prompt,
-				threadId
-			);
+		let summaryPrompt: string;
+		if (summaryMode === 'brief') {
+			summaryPrompt = createBriefSummaryPrompt(messages);
+		} else if (summaryMode === 'detailed') {
+			summaryPrompt = createDetailedSummaryPrompt(messages);
+		} else if (summaryMode === 'bullet') {
+			summaryPrompt = createBulletSummaryPrompt(messages);
 		} else {
-			const prompt = createSummaryPrompt(messages);
-			summary = await createTextCompletion(
-				this.app,
-				room,
-				read,
-				user,
-				http,
-				prompt,
-				threadId
-			);
+			if (!threadId) {
+				summaryPrompt = createSummaryPromptByTopics(messages);
+			} else {
+				summaryPrompt = createSummaryPrompt(messages);
+			}
 		}
+
+		const summary = await createTextCompletion(
+			this.app,
+			room,
+			read,
+			user,
+			http,
+			summaryPrompt,
+			threadId
+		);
 		await notifyMessage(room, read, user, summary, threadId);
 
 		if (addOns.includes('assigned-tasks')) {

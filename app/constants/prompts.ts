@@ -303,6 +303,43 @@ User Question ###
 {userQuestion}
 ###
 `;
+
+const BRIEF_SUMMARY_PROMPT = `Summarize the following dialogue in 1-2 short and simple sentences using as few words as possible. Mention specific persons.
+
+Dialogue: ###
+{dialogue}
+###
+
+Summary: `;
+
+export function createBriefSummaryPrompt(dialogue: string): string {
+	return BRIEF_SUMMARY_PROMPT.replace('{dialogue}', dialogue);
+}
+
+const DETAILED_SUMMARY_PROMPT = `Provide a detailed summary of the following conversation. Include key points, context, and conclusions in a concise paragraph. Mention the names of specific persons.
+
+Dialogue: ###
+{dialogue}
+###
+
+Summary: `;
+
+export function createDetailedSummaryPrompt(dialogue: string): string {
+	return DETAILED_SUMMARY_PROMPT.replace('{dialogue}', dialogue);
+}
+
+const BULLET_SUMMARY_PROMPT = `Summarize the following dialogue in bullet points. List key topics and messages discussed using clear bullet formatting. Mention specific persons where applicable.
+
+Dialogue: ###
+{dialogue}
+###
+
+Summary: `;
+
+export function createBulletSummaryPrompt(dialogue: string): string {
+	return BULLET_SUMMARY_PROMPT.replace('{dialogue}', dialogue);
+}
+
 export function createUserHelpPrompt(
 	FrequentlyAskedQuestions: string,
 	userQuestion: string
