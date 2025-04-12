@@ -46,6 +46,12 @@
         },
         {
             "name": "upload.read"
+        },
+        {
+            "name": "ui.registerButtons"
+        },
+        {
+            "name": "ui.interact"
         }
     ]
 }

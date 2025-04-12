@@ -70,7 +70,7 @@ export async function createTextCompletion(
 		);
 
 		if (!response || !response.data) {
-			app.getLogger().log('No response data received from AI.');
+            app.getLogger().log('No response data received from AI.');
 			return 'Something went wrong. Please try again later.';
 		}
 
